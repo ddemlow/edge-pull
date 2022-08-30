@@ -37,7 +37,7 @@
     #repo_url: git://github.com/sfromm/ansible-playbooks.git
     repo_url: git@github.com:ddemlow/edge-pull.git
 
-  tasks:
+ tasks:
 
     - name: Install ansible
       yum: pkg=ansible state=installed
@@ -45,8 +45,9 @@
     - name: Create local directory to work from
       file: path={{workdir}} state=directory owner=root group=root mode=0751
 
+# should be able to use localhost and execute against single hypercore cluster - use cloud-init to create file setting ip for cluster
     - name: Copy ansible inventory file to client
-      copy: src=/etc/ansible/hosts dest=/etc/ansible/hosts
+      copy: src=/clusterip.txt dest=/etc/ansible/hosts
               owner=root group=root mode=0644
 
     - name: Create crontab entry to clone/pull git repository
