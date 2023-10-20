@@ -2,7 +2,7 @@
 - name: Simple vm deploy #edit vmname variable - use -l filter to specify cluster vs. full inventory
   hosts: localhost
   vars:
-    - vmname: pulltest
+    - vmname: pulltest-change
   connection: ansible.builtin.local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
