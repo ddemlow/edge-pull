@@ -54,6 +54,7 @@
 
     - name: install scale_computing.hypercore collection
       ansible.builtin.command: ansible-galaxy collection install scale_computing.hypercore
+      become: true
     
     - name: Create local directory to work from
       become: true
