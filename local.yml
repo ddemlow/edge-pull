@@ -8,8 +8,8 @@
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
   environment:  #if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_HOST: "https://{{ inventory_hostname }}"
-    SC_USERNAME: "{{ scale_user }}"
-    SC_PASSWORD: "{{ scale_pass }}"  
+    SC_USERNAME: "admin"
+    SC_PASSWORD: "admin"  
 
   tasks:
   # - name: Create project directory /tmp (if it doesn't exist already)
@@ -20,10 +20,6 @@
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
     scale_computing.hypercore.iso:
-      cluster_instance:
-        host: "https://{{inventory_hostname }}"
-        username: "{{scale_user}}"
-        password: "{{scale_pass}}"
       name: "TinyCore-current.iso"
       source: "/Users/davedemlow/Downloads/TinyCore-current.iso"
       state: present
@@ -31,10 +27,6 @@
 
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
-      cluster_instance:
-        host: "https://{{inventory_hostname }}"
-        username: "{{scale_user}}"
-        password: "{{scale_pass}}"   
       vm_name: "{{ vmname }}"
       description: Demo VM
       state: present
