@@ -43,12 +43,11 @@
         #   disk_slot: 0
         #   iso_name: ""
         - type: ide_cdrom
-          disk_slot: 1
-          iso_name: ""
+          disk_slot: 0
+          iso_name: "TinyCore-current.iso"
         - type: virtio_disk
           disk_slot: 0
           size: "{{ '10.1 GB' | human_to_bytes }}"
-
       nics:
         - vlan: 1
           type: RTL8139
