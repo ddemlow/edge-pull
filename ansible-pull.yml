@@ -52,9 +52,12 @@
     
 #      apt: pkg=ansible state=present
 
+    - name: install scale_computing.hypercore collection
+      ansible.builtin.command: ansible-galaxy collection install scale_computing.hypercore
+    
     - name: Create local directory to work from
       become: true
-      file: path={{workdir}} state=directory owner=root group=root mode=0751
+      file: path={{ workdir }} state=directory owner=root group=root mode=0751
 
 # should be able to use localhost and execute against single hypercore cluster - use cloud-init to create file setting ip for cluster
     - name: Copy ansible inventory file to from /clusterip.txt to /etc/ansible/hosts
