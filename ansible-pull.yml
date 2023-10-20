@@ -76,7 +76,7 @@
     - name: Create crontab entry to run ansible-pull against repo_url every "{{ _hour_ }}" hour and "{{ _minutes_ }}" minutes
       ansible.builtin.cron:
         name: ansible-pull
-        job: ansible-pull -U "{{ repo_url }}" -i /var/lib/ansible/local/inventory
+        job: ansible-pull -U "{{ repo_url }}"
         user: "{{ cron_user }}"
         minute: "{{ _minute_ }}"
         hour: "{{ _hour_ }}"
