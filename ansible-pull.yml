@@ -14,17 +14,20 @@
 #
 #
 ---
-
-- hosts: pull_mode_hosts
-  remote_user: root
+- hosts: all
+  remote_user: ubuntu
 
   vars:
+    ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
+    ansible_ssh_private_key_file: ~/.ssh/github.pub
+    _minute_: 15
+    _hour_: 0
 
     # schedule is fed directly to cron
     schedule: '*/15 * * * *'
 
     # User to run ansible-pull as from cron
-    cron_user: root
+    cron_user: ubuntu
 
     # File that ansible will use for logs
     logfile: /var/log/ansible-pull.log
@@ -35,23 +38,50 @@
     # Repository to check out -- YOU MUST CHANGE THIS
     # repo must contain a local.yml file at top level
     #repo_url: git://github.com/sfromm/ansible-playbooks.git
-    repo_url: git@github.com:ddemlow/edge-pull.git
+    repo_url: https://github.com/ddemlow/edge-pull.git
 
- tasks:
+
+  tasks:
 
     - name: Install ansible
-      yum: pkg=ansible state=installed
+      become: true
+      ansible.builtin.package:
+        name:
+          - ansible
+        state: latest
+    
+#      apt: pkg=ansible state=present
 
     - name: Create local directory to work from
+      become: true
       file: path={{workdir}} state=directory owner=root group=root mode=0751
 
 # should be able to use localhost and execute against single hypercore cluster - use cloud-init to create file setting ip for cluster
-    - name: Copy ansible inventory file to client
-      copy: src=/clusterip.txt dest=/etc/ansible/hosts
-              owner=root group=root mode=0644
+    - name: Copy ansible inventory file to from /clusterip.txt to /etc/ansible/hosts
+      ansible.builtin.copy:
+        remote_src: true
+        src:  /clusterip.txt
+        dest: '{{workdir}}/inventory'
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+      become: true
+#      copy: src=/clusterip.txt dest=/etc/ansible/hosts
+#              owner=root group=root mode=0644
 
-    - name: Create crontab entry to clone/pull git repository
-      template: src=templates/etc_cron.d_ansible-pull.j2 dest=/etc/cron.d/ansible-pull owner=root group=root mode=0644
+    - name: Create crontab entry to run ansible-pull against repo_url every "{{ _hour_ }}" hour and "{{ _minutes_ }}" minutes
+      ansible.builtin.cron:
+        name: ansible-pull
+        job: ansible-pull -U "{{ repo_url }}" -i /var/lib/ansible/local/inventory
+        user: "{{ cron_user }}"
+        minute: "{{ _minute_ }}"
+        hour: "{{ _hour_ }}"
+        state: present
+      become: true
+    
+      # become: true
+      # template: src=templates/etc_cron.d_ansible-pull.j2 dest=/etc/cron.d/ansible-pull owner=root group=root mode=0644
 
-    - name: Create logrotate entry for ansible-pull.log
-      template: src=templates/etc_logrotate.d_ansible-pull.j2 dest=/etc/logrotate.d/ansible-pull owner=root group=root mode=0644
+    # - name: Create logrotate entry for ansible-pull.log
+    #   become: true
+    #   template: src=templates/etc_logrotate.d_ansible-pull.j2 dest=/etc/logrotate.d/ansible-pull owner=root group=root mode=0644
