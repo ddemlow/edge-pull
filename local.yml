@@ -19,7 +19,7 @@
     get_url: url=http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso dest=~/tmp/TinyCore-vm-integration.iso
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
-    scale_computing.hypercore.iso
+    scale_computing.hypercore.iso:
       name: "TinyCore-current.iso"
       source: "~/tmp/TinyCore-vm-integration.iso"
       state: present
