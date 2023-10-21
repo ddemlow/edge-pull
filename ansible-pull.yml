@@ -20,7 +20,7 @@
   vars:
     ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
     ansible_ssh_private_key_file: ~/.ssh/github.pub
-    _minute_: /10
+    _minute_: "*/10"
     _hour_: 0
 
     # schedule is fed directly to cron
