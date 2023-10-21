@@ -158,16 +158,16 @@
     #         size: "{{ '100 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
     #     state: present
 
-      - name: Vm desired configuration and state for "{{ vmname }}"
-        scale_computing.hypercore.vm_params:
-          vm_name: "{{vmname}}"
-          memory: "{{ '4 GB' | human_to_bytes }}"
-          description:
-          tags:
-            - "{{vmname}}"
-            - ansible
-            - "{{ site_name }}"
-            - ansible_group__"{{vmname}}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
-          vcpu: 4
-          power_state: start
+  - name: Vm desired configuration and state for "{{ vmname }}"
+    scale_computing.hypercore.vm_params:
+      vm_name: "{{vmname}}"
+      memory: "{{ '4 GB' | human_to_bytes }}"
+      description:
+      tags:
+        - "{{vmname}}"
+        - ansible
+        - "{{ site_name }}"
+        - ansible_group__"{{vmname}}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
+      vcpu: 4
+      power_state: start
 
