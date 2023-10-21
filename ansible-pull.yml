@@ -24,7 +24,7 @@
     _hour_: 0
 
     # schedule is fed directly to cron
-    schedule: '*/15 * * * *'
+    # schedule: '*/15 * * * *'
 
     # User to run ansible-pull as from cron
     cron_user: ubuntu

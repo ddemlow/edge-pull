@@ -16,12 +16,12 @@
   #   file: state=directory path=~/tmp
 
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
-    get_url: url=http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso dest=~/tmp/TinyCore-vm-integration.iso
+    get_url: url=http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso dest=/tmp/TinyCore-vm-integration.iso
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
     scale_computing.hypercore.iso:
       name: "TinyCore-current.iso"
-      source: "~/tmp/TinyCore-vm-integration.iso"
+      source: "/tmp/TinyCore-vm-integration.iso"
       state: present
     register: result
 
