@@ -38,7 +38,6 @@
         - mytag2
       memory: "{{ '512 MB' | human_to_bytes }}"
       vcpu: 2
-#      attach_guest_tools_iso: true
       power_state: start
       disks:
         # - type: ide_cdrom
@@ -149,14 +148,14 @@
     #         dsmode: local
     #         local-hostname: "{{ vmname }}"
 
-    # - name: Disk desired configuration for "{{ vmname }}"
-    #   scale_computing.hypercore.vm_disk:
-    #     vm_name: "{{ vmname }}"
-    #     items:
-    #       - disk_slot: 0
-    #         type: virtio_disk
-    #         size: "{{ '100 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
-    #     state: present
+  - name: Disk desired configuration for "{{ vmname }}"
+    scale_computing.hypercore.vm_disk:
+      vm_name: "{{ vmname }}"
+      items:
+        - disk_slot: 0
+          type: virtio_disk
+          size: "{{ '100 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
+      state: present
 
   - name: Vm desired configuration and state for "{{ vmname }}"
     scale_computing.hypercore.vm_params:
