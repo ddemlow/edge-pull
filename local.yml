@@ -165,7 +165,6 @@
       tags:
         - "{{vmname}}"
         - ansible
-        - "{{ site_name }}"
         - ansible_group__"{{vmname}}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
       vcpu: 4
       power_state: start
