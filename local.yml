@@ -33,25 +33,21 @@
       description: Demo VM
       state: present
       tags:
-        - Xlab
-        - mytag1
-        - mytag2
-      memory: "{{ '512 MB' | human_to_bytes }}"
+        - ansible-pull
+        - "{{ vmname }}"
+      memory: "{{ '1GB' | human_to_bytes }}"
       vcpu: 2
       power_state: start
       disks:
-        # - type: ide_cdrom
-        #   disk_slot: 0
-        #   iso_name: ""
         - type: ide_cdrom
           disk_slot: 0
           iso_name: "TinyCore-current.iso"
         - type: virtio_disk
           disk_slot: 0
-          size: "{{ '10.1 GB' | human_to_bytes }}"
+          size: "{{ '10 GB' | human_to_bytes }}"
       nics:
         - vlan: 1
-          type: RTL8139
+          type: virtio
         - vlan: 2
           type: virtio
       boot_devices:
@@ -159,13 +155,13 @@
 
   - name: Vm desired configuration and state for "{{ vmname }}"
     scale_computing.hypercore.vm_params:
-      vm_name: "{{vmname}}"
+      vm_name: "{{ vmname }}"
       memory: "{{ '4 GB' | human_to_bytes }}"
       description:
       tags:
-        - "{{vmname}}"
+        - "{{ vmname }}"
         - ansible
-        - ansible_group__"{{vmname}}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
+        - ansible_group__"{{ vmname }}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
       vcpu: 4
       power_state: start
 
