@@ -21,7 +21,7 @@
   vars:
     ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
     ansible_ssh_private_key_file: ~/.ssh/github.pub
-    _minute_: "*/10"
+    _minute_: "*/05"
     _hour_: 0
 
     # schedule is fed directly to cron
@@ -43,6 +43,18 @@
 
 
   tasks:
+
+    - name: Add environment variables to /etc/environment
+      lineinfile:
+        path: /etc/environment
+        line: "{{ item }}"
+        state: present
+      become: yes
+      loop:
+        - 'clusterip="{{ inventory_hostname }}"'
+        - 'SC_HOST="https://{{ inventory_hostname }}"'  #this works when executing ansible-pull directly on SCEL host
+        - 'SC_USERNAME="admin"'
+        - 'SC_PASSWORD="admin"'
 
     - name: Install ansible
 #      become: true

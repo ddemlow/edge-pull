@@ -6,10 +6,10 @@
   connection: ansible.builtin.local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
-  environment:  #TODO - set these via cloud init or ansible-pull.yml - if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
-    SC_HOST: "https://10.100.20.25"
-    SC_USERNAME: "admin"
-    SC_PASSWORD: "admin"  
+  # environment:  #TODO - set these via cloud init or ansible-pull.yml - if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
+  #   SC_HOST: "https://10.100.20.25"
+  #   SC_USERNAME: "admin"
+  #   SC_PASSWORD: "admin"  
 
   tasks:
   # - name: Create project directory /tmp (if it doesn't exist already)
@@ -26,6 +26,22 @@
       state: present
     register: result
     become: true
+
+
+  - name: get all vms 
+    scale_computing.hypercore.vm_info:
+    register: vm_info
+
+  # - name: clone all replicated vms and preserve mac - set DRtest tag #note - will skip if VM name already exists - added date + minute to name 
+  #   scale_computing.hypercore.vm_clone:
+  #     source_vm_name: "{{item.vm_name}}"
+  #     preserve_mac_address: true
+  #     vm_name: "{{item.vm_name}}-{{ '%Y-%m-%d_%M' | strftime }}-DR"
+  #     tags:
+  #       - DRtest
+  #   when: initiate_failover is true and ( item.replication_source_vm_uuid | length > 0) 
+  #   loop: "{{ vm_info.records }}" # should build sub-list of replication targets
+  #   register: cloned_vms    
 
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
@@ -98,6 +114,7 @@
 
     # - name: Create and configure ad hoc "{{ vmname }}"
     #   scale_computing.hypercore.vm_clone:
+    #    source_vm_name: 
     #     vm_name: "{{vmname}}"
     #     memory: "{{ '4 GB' | human_to_bytes }}"
     #     description:
