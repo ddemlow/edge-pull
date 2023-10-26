@@ -6,7 +6,7 @@
   connection: ansible.builtin.local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
-  environment:  #if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
+  environment:  #TODO - set these via cloud init or ansible-pull.yml - if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_HOST: "https://10.100.20.25"
     SC_USERNAME: "admin"
     SC_PASSWORD: "admin"  
@@ -157,7 +157,7 @@
     scale_computing.hypercore.vm_params:
       vm_name: "{{ vmname }}"
       memory: "{{ '4 GB' | human_to_bytes }}"
-      description:
+      description: test update
       tags:
         - "{{ vmname }}"
         - ansible

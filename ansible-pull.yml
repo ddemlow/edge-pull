@@ -16,6 +16,7 @@
 ---
 - hosts: all
   remote_user: ubuntu
+#  become: yes
 
   vars:
     ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
@@ -44,7 +45,7 @@
   tasks:
 
     - name: Install ansible
-      become: true
+#      become: true
       ansible.builtin.package:
         name:
           - ansible
@@ -52,9 +53,20 @@
     
 #      apt: pkg=ansible state=present
 
-    - name: install scale_computing.hypercore collection
-      ansible.builtin.command: ansible-galaxy collection install scale_computing.hypercore
-      become: true
+    # - name: install scale_computing.hypercore collection
+    #   ansible.builtin.command: ansible-galaxy collection install scale_computing.hypercore
+    #   become: true
+
+    - name: Install the scale_computing.hypercore collection
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install scale_computing.hypercore
+      register: result
+      failed_when:
+        - result.rc != 0
+        - '"already installed" not in result.stdout'
+      changed_when: '"installed" in result.stdout'
+      tags:
+        - install_collection
     
     - name: Create local directory to work from
       become: true
