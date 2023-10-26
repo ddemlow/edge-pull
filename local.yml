@@ -177,7 +177,7 @@
     scale_computing.hypercore.vm_params:
       vm_name: "{{ vmname }}"
       memory: "{{ '4 GB' | human_to_bytes }}"
-      description: test update 3
+      description: test update 4
       tags:
         - "{{ vmname }}"
         - ansible
