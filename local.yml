@@ -1,20 +1,17 @@
 ---
-- name: Simple vm deploy #edit vmname variable - use -l filter to specify cluster vs. full inventory
+- name: Playbook automatically run by ansible-pull 
   hosts: localhost
   vars:
     - vmname: pulltest-change
   connection: ansible.builtin.local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
-  # environment:  #TODO - set these via cloud init or ansible-pull.yml - if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
+  # environment: # assumes these are already set up for each site in ansible-pull.yml setup playbook 
   #   SC_HOST: "https://10.100.20.25"
   #   SC_USERNAME: "admin"
   #   SC_PASSWORD: "admin"  
 
   tasks:
-  # - name: Create project directory /tmp (if it doesn't exist already)
-  #   file: state=directory path=~/tmp
-
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
     get_url: 
       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso 
@@ -30,160 +27,63 @@
     register: result
     become: true
 
+  # - name: get all vms 
+  #   scale_computing.hypercore.vm_info:
+  #   register: vm_info
 
-  - name: get all vms 
-    scale_computing.hypercore.vm_info:
-    register: vm_info
-
-  # - name: clone all replicated vms and preserve mac - set DRtest tag #note - will skip if VM name already exists - added date + minute to name 
-  #   scale_computing.hypercore.vm_clone:
-  #     source_vm_name: "{{item.vm_name}}"
-  #     preserve_mac_address: true
-  #     vm_name: "{{item.vm_name}}-{{ '%Y-%m-%d_%M' | strftime }}-DR"
-  #     tags:
-  #       - DRtest
-  #   when: initiate_failover is true and ( item.replication_source_vm_uuid | length > 0) 
-  #   loop: "{{ vm_info.records }}" # should build sub-list of replication targets
-  #   register: cloned_vms    
-
-  # - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
-  #   scale_computing.hypercore.vm:
-  #     vm_name: "{{ vmname }}"
-  #     description: Demo VM
-  #     state: present
-  #     tags:
-  #       - ansible-pull
-  #       - "{{ vmname }}"
-  #     memory: "{{ '1GB' | human_to_bytes }}"
-  #     vcpu: 2
-  #     power_state: start
-  #     disks:
-  #       - type: ide_cdrom
-  #         disk_slot: 0
-  #         iso_name: "TinyCore-current.iso"
-  #       - type: virtio_disk
-  #         disk_slot: 0
-  #         size: "{{ '10 GB' | human_to_bytes }}"
-  #     nics:
-  #       - vlan: 1
-  #         type: virtio
-  #       - vlan: 2
-  #         type: virtio
-  #     boot_devices:
-  #       - type: ide_cdrom
-  #         disk_slot: 0
-  #       - type: virtio_disk
-  #         disk_slot: 0
-  #       - type: nic
-  #         nic_vlan: 1
-  #     cloud_init:
-  #       user_data: |
-  #         #cloud-config
-  #         password: "password"
-  #         chpasswd: { expire: False }
-  #         ssh_pwauth: True
-  #         apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
-  #         packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
-  #         snap:
-  #           commands:
-  #             00: snap install semaphore
-  #             01: snap install edgexfoundry
-  #             02: snap install edgex-ui 
-  #             03: snap install edgex-cli
-  #             04: snap install edgex-device-camera
-  #             05: snap install edgex-device-mqtt
-  #             06: snap install edgex-device-rest 
-
-  #         bootcmd:
-  #           - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-  #           - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-  #           - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-  #           - [ sh, -c, 'sudo update-grub' ]
-  #         runcmd:
-  #           - [ systemctl, restart, --no-block, qemu-guest-agent ]
-  #         write_files:
-  #         # configure docker daemon to be accessible remotely via TCP on socket 2375
-  #         - content: |
-  #             [Service]
-  #             ExecStart=
-  #             ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
-  #           path: /etc/systemd/system/docker.service.d/options.conf
-  #       meta_data: |
-  #         dsmode: local
-  #         local-hostname: "{{ vmname }}"
-  #     machine_type: BIOS
-  #   register: vm_created
-
-
-    # - name: Create and configure ad hoc "{{ vmname }}"
-    #   scale_computing.hypercore.vm_clone:
-    #    source_vm_name: 
-    #     vm_name: "{{vmname}}"
-    #     memory: "{{ '4 GB' | human_to_bytes }}"
-    #     description:
-    #     tags:
-    #       - "{{vmname}}"
-    #       - ansible
-    #       - "{{ site_name }}"
-    #       - ansible_group__"{{vmname}}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
-    #     vcpu: 4
-    #     power_state: start
-    #     cloud_init:
-    #       user_data: |
-    #         #cloud-config
-    #         password: "password"
-    #         chpasswd: { expire: False }
-    #         ssh_pwauth: True
-    #         apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
-    #         packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
-    #         snap:
-    #           commands:
-    #             00: snap install semaphore
-    #             01: snap install edgexfoundry
-    #             02: snap install edgex-ui 
-    #             03: snap install edgex-cli
-    #             04: snap install edgex-device-camera
-    #             05: snap install edgex-device-mqtt
-    #             06: snap install edgex-device-rest 
-
-    #         bootcmd:
-    #           - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-    #           - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-    #           - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-    #           - [ sh, -c, 'sudo update-grub' ]
-    #         runcmd:
-    #           - [ systemctl, restart, --no-block, qemu-guest-agent ]
-    #         write_files:
-    #         # configure docker daemon to be accessible remotely via TCP on socket 2375
-    #         - content: |
-    #             [Service]
-    #             ExecStart=
-    #             ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
-    #           path: /etc/systemd/system/docker.service.d/options.conf
-    #       meta_data: |
-    #         dsmode: local
-    #         local-hostname: "{{ vmname }}"
-
-  # - name: Disk desired configuration for "{{ vmname }}"
-  #   scale_computing.hypercore.vm_disk:
-  #     vm_name: "{{ vmname }}"
-  #     items:
-  #       - disk_slot: 0
-  #         type: virtio_disk
-  #         size: "{{ '100 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
-  #     state: present
-
-  - name: Vm desired configuration and state for "{{ vmname }}"
-    scale_computing.hypercore.vm_params:
+  - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
+    scale_computing.hypercore.vm:
       vm_name: "{{ vmname }}"
-      memory: "{{ '4 GB' | human_to_bytes }}"
-      description: test update 4
+      description: Demo VM created via ansible-pull
+      state: present
       tags:
+        - ansible-pull
         - "{{ vmname }}"
-        - ansible
-        - ansible_group__"{{ vmname }}" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
-      vcpu: 4
+      memory: "{{ '1GB' | human_to_bytes }}"
+      vcpu: 2
       power_state: start
+      disks:
+        - type: ide_cdrom
+          disk_slot: 0
+          iso_name: "TinyCore-current.iso"
+        - type: virtio_disk
+          disk_slot: 0
+          size: "{{ '10 GB' | human_to_bytes }}"
+      nics:
+        - vlan: 0
+          type: virtio
+      boot_devices:
+        - type: ide_cdrom
+          disk_slot: 0
+        - type: virtio_disk
+          disk_slot: 0
+      cloud_init:
+        user_data: |
+          #cloud-config
+          password: "password"
+          chpasswd: { expire: False }
+          ssh_pwauth: True
+          apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
+          packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
+          bootcmd:
+            - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
+            - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
+            - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
+            - [ sh, -c, 'sudo update-grub' ]
+          runcmd:
+            - [ systemctl, restart, --no-block, qemu-guest-agent ]
+          write_files:
+          # configure docker daemon to be accessible remotely via TCP on socket 2375
+          - content: |
+              [Service]
+              ExecStart=
+              ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
+            path: /etc/systemd/system/docker.service.d/options.conf
+        meta_data: |
+          dsmode: local
+          local-hostname: "{{ vmname }}"
+      machine_type: BIOS
+    register: vm_created
 
   - name: Start pgAdmin4 container
     community.docker.docker_container:
