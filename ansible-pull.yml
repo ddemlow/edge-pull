@@ -26,7 +26,7 @@
     # User to run ansible-pull as from cron
     cron_user: ubuntu
     # File that ansible will use for logs
-    logfile: /var/log/ansible-pull.log
+    logfile: /tmp/ansible-pull.log
     # Directory to where repository will be cloned
     workdir: /var/lib/ansible/local
 
