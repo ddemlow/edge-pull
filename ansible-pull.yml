@@ -1,4 +1,4 @@
-# ansible-pull setup
+# ansible-pull runner setup
 #
 # on remote hosts, set up ansible to run periodically using the latest code
 # from a particular checkout, in pull based fashion, inverting Ansible's
@@ -12,36 +12,27 @@
 # DO NOT RUN THIS AGAINST YOUR HOSTS WITHOUT CHANGING THE repo_url
 # TO SOMETHING YOU HAVE PERSONALLY VERIFIED
 #
-#
 ---
 - hosts: all
   remote_user: ubuntu
 #  become: yes
 
   vars:
-    clusterip: 10.100.20.25
+    clusterip: 10.100.20.25 #todo - change to inventory_hostname to use inventory
     ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
     ansible_ssh_private_key_file: ~/.ssh/github.pub
     _minute_: "*/05"
     _hour_: 0
-
-    # schedule is fed directly to cron
-    # schedule: '*/15 * * * *'
-
     # User to run ansible-pull as from cron
     cron_user: ubuntu
-
     # File that ansible will use for logs
     logfile: /var/log/ansible-pull.log
-
     # Directory to where repository will be cloned
     workdir: /var/lib/ansible/local
 
     # Repository to check out -- YOU MUST CHANGE THIS
     # repo must contain a local.yml file at top level
-    #repo_url: git://github.com/sfromm/ansible-playbooks.git
     repo_url: https://github.com/ddemlow/edge-pull.git
-
 
   tasks:
 
@@ -56,20 +47,17 @@
         - 'SC_HOST="https://{{ clusterip }}"'  #this works when executing ansible-pull directly on SCEL host
         - 'SC_USERNAME="admin"'
         - 'SC_PASSWORD="admin"'
+#TODO - above requires reboot to set systemwide environment
 
-    - name: Install ansible
-#      become: true
+    - name: Install ansible and docker 
+      become: true
       ansible.builtin.package:
         name:
           - ansible
+          - docker
+          - docker-compose
         state: latest
     
-#      apt: pkg=ansible state=present
-
-    # - name: install scale_computing.hypercore collection
-    #   ansible.builtin.command: ansible-galaxy collection install scale_computing.hypercore
-    #   become: true
-
     - name: Install the scale_computing.hypercore collection
       ansible.builtin.command:
         cmd: ansible-galaxy collection install scale_computing.hypercore
@@ -106,22 +94,17 @@
         group: root
         mode: u=rw,g=r,o=r
       become: true
-#      copy: src=/clusterip.txt dest=/etc/ansible/hosts
-#              owner=root group=root mode=0644
 
     - name: Create crontab entry to run ansible-pull against repo_url every "{{ _hour_ }}" hour and "{{ _minutes_ }}" minutes
       ansible.builtin.cron:
         name: ansible-pull
-        job: /usr/bin/ansible-pull -U "{{ repo_url }}" >> /tmp/ansible_logfile.log 2>&1
+        job: /usr/bin/ansible-pull -U "{{ repo_url }}" >> "{{ logfile }}" 2>&1
         user: "{{ cron_user }}"
         minute: "{{ _minute_ }}"
 #        hour: "{{ _hour_ }}"
         state: present
       become: true
     
-      # become: true
-      # template: src=templates/etc_cron.d_ansible-pull.j2 dest=/etc/cron.d/ansible-pull owner=root group=root mode=0644
-
     # - name: Create logrotate entry for ansible-pull.log
     #   become: true
     #   template: src=templates/etc_logrotate.d_ansible-pull.j2 dest=/etc/logrotate.d/ansible-pull owner=root group=root mode=0644
