@@ -35,25 +35,24 @@
   - name: Download Virtual Disks from URL list
     ansible.builtin.get_url: #TODO: what if file doesn't download completely?
       url: "{{ item }}"
-      dest: "{{image_path}}{{ item | split('/') | last }}"
+      dest: "{{image_path}}{{ item | basename }}"
       timeout: 10000
       validate_certs: false
-#    when: not "{{image_path}}{{ item | split('/') | last }}"
     register: download
     loop: "{{ image_url }}"
 
-  - name: Delete existing uploading-"{{ item | split('/') | last }}" virtual disk # this is just to clean up previous aborts
+  - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
     scale_computing.hypercore.virtual_disk:
-      name: "uploading-{{ item | split('/') | last }}"
+      name: "uploading-{{ item | basename }}"
       state: absent
     when: image_remove_old
     register: deleted
     loop: "{{ image_url }}"      
 
-  - name: Upload Virtual Disk {{ item | split('/') | last }}" to HyperCore "{{ inventory_hostname }}"
+  - name: Upload Virtual Disk {{ item | basename }}" to HyperCore "{{ inventory_hostname }}"
     scale_computing.hypercore.virtual_disk:
-      name: "{{ item | split('/') | last }}"
-      source: "{{image_path}}{{ item | split('/') | last }}"
+      name: "{{ item | basename }}"
+      source: "{{image_path}}{{ item | basename }}"
       state: present
     register: uploadResult
     loop: "{{ image_url }}" 
