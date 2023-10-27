@@ -199,6 +199,7 @@
 
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
+      project_name: wordpress
       definition:
         version: '3.3'
 
