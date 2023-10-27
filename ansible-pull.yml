@@ -80,6 +80,17 @@
       changed_when: '"installed" in result.stdout'
       tags:
         - install_collection
+
+    - name: Install the docker  collection
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install community.docker
+      register: result
+      failed_when:
+        - result.rc != 0
+        - '"already installed" not in result.stdout'
+      changed_when: '"installed" in result.stdout'
+      tags:
+        - install_collection
     
     - name: Create local directory to work from
       become: true
@@ -101,7 +112,7 @@
     - name: Create crontab entry to run ansible-pull against repo_url every "{{ _hour_ }}" hour and "{{ _minutes_ }}" minutes
       ansible.builtin.cron:
         name: ansible-pull
-        job: /usr/bin/ansible-pull -U "{{ repo_url }}"
+        job: /usr/bin/ansible-pull -U "{{ repo_url }}" >> /tmp/ansible_logfile.log 2>&1
         user: "{{ cron_user }}"
         minute: "{{ _minute_ }}"
 #        hour: "{{ _hour_ }}"

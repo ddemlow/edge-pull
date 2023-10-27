@@ -186,7 +186,7 @@
       power_state: start
 
   - name: Start pgAdmin4 container
-    docker_container:
+    community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4
       state: started
