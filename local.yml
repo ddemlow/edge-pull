@@ -199,6 +199,6 @@
 
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
-#      project_src: /path/on/target/host/
+      project_src: ./docker-compose.yml
       state: present
     become: yes
