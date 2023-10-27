@@ -1,8 +1,11 @@
 ---
 - name: Playbook automatically run by ansible-pull 
+# currently downloads iso from internet, uploads it to each cluster media, creates VM that boots from iso
+# inside "runner" vm deploys simple docker container plus a docker compose configuration
+# other things this could do might include downloading virtual disks locally and then uploading them to cluster, could load SAMBA container for file share, etc.
   hosts: localhost
   vars:
-    - vmname: pulltest-change
+    - vmname: pull-tinycore
   connection: ansible.builtin.local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
@@ -27,14 +30,10 @@
     register: result
     become: true
 
-  # - name: get all vms 
-  #   scale_computing.hypercore.vm_info:
-  #   register: vm_info
-
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
       vm_name: "{{ vmname }}"
-      description: Demo VM created via ansible-pull
+      description: VM created via ansible-pull running on "{{ inventory_hostname }}" 
       state: present
       tags:
         - ansible-pull
@@ -42,6 +41,7 @@
       memory: "{{ '1GB' | human_to_bytes }}"
       vcpu: 2
       power_state: start
+      force_reboot: true
       disks:
         - type: ide_cdrom
           disk_slot: 0
