@@ -5,19 +5,23 @@
 # other things this could do might include downloading virtual disks locally and then uploading them to cluster, could load SAMBA container for file share, etc.
   hosts: localhost
   vars:
-    - vmname: pull-tinycore
+    vmname: pull-tinycore
+    image_path: /tmp
+    image_url:
+      - "https://github.com/ddemlow/RestAPIExamples/raw/master/ubuntu20_04-cloud-init/ubuntu20cloudimage.qcow2"
+      - "https://github.lab.local/ddemlow/k8sdeploy/raw/master/ubuntu18_04-cloud-init/ubuntu18cloudimage.qcow2"
+      - "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.vmdk"
+      - "https://github.com/ddemlow/RestAPIExamples/raw/master/RHEL9/RHEL9-disk.qcow2"
+      - "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img"
+    image_filename: "{{ image_url[0] | split('/') | last }}"  #only works for first in list
+
   connection: ansible.builtin.local
   gather_facts: false
-  strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
-  # environment: # assumes these are already set up for each site in ansible-pull.yml setup playbook 
-  #   SC_HOST: "https://10.100.20.25"
-  #   SC_USERNAME: "admin"
-  #   SC_PASSWORD: "admin"  
 
   tasks:
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
-    get_url: 
-      url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso 
+    ansible.builtin.get_url:
+      url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
       dest: /tmp/TinyCore-vm-integration.iso
       force: false
     become: true
@@ -29,6 +33,33 @@
       state: present
     register: result
     become: true
+
+  - name: Download Virtual Disks from URL list
+    ansible.builtin.get_url: #TODO: what if file doesn't download completely?
+      url: "{{ item }}"
+      dest: "{{image_path}}{{ item | split('/') | last }}"
+      timeout: 10000
+      validate_certs: false
+#    when: not "{{image_path}}{{ item | split('/') | last }}"
+    register: download
+    loop: "{{ image_url }}"
+
+  - name: Delete existing uploading-"{{ item | split('/') | last }}" virtual disk # this is just to clean up previous aborts
+    scale_computing.hypercore.virtual_disk:
+      name: "uploading-{{ item | split('/') | last }}"
+      state: absent
+    when: image_remove_old
+    register: deleted
+    loop: "{{ image_url }}"      
+
+  - name: Upload Virtual Disk {{ item | split('/') | last }}" to HyperCore "{{ inventory_hostname }}"
+    scale_computing.hypercore.virtual_disk:
+      name: "{{ item | split('/') | last }}"
+      source: "{{image_path}}{{ item | split('/') | last }}"
+      state: present
+    register: uploadResult
+    loop: "{{ image_url }}" 
+    ignore_errors: true
 
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
