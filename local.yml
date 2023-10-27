@@ -10,10 +10,8 @@
     image_url:
       - "https://github.com/ddemlow/RestAPIExamples/raw/master/ubuntu20_04-cloud-init/ubuntu20cloudimage.qcow2"
       - "https://github.lab.local/ddemlow/k8sdeploy/raw/master/ubuntu18_04-cloud-init/ubuntu18cloudimage.qcow2"
-      - "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.vmdk"
       - "https://github.com/ddemlow/RestAPIExamples/raw/master/RHEL9/RHEL9-disk.qcow2"
-      - "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img"
-    image_filename: "{{ image_url[0] | split('/') | last }}"  #only works for first in list
+    image_filename: "{{ image_url[0] | split('/') | last }}"  # only works for first in list
 
   connection: ansible.builtin.local
   gather_facts: false
