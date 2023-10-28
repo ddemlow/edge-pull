@@ -23,7 +23,7 @@
       dest: /tmp/TinyCore-vm-integration.iso
       force: false
     become: true
-    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
+#    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
 
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
@@ -51,7 +51,7 @@
       validate_certs: false
     register: download
     loop: "{{ image_url }}"
-    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
+#    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
 
 
   - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
