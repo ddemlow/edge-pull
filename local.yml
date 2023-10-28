@@ -35,7 +35,7 @@
   - name: Download Virtual Disks from URL list
     ansible.builtin.get_url: #TODO: what if file doesn't download completely?
       url: "{{ item }}"
-      dest: "{{image_path}}{{ item | basename }}"
+      dest: "{{image_path}}"  #{{ item | basename }}"
       timeout: 10000
       validate_certs: false
     register: download
