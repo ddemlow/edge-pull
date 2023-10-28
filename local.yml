@@ -34,14 +34,25 @@
     register: result
     become: true
 
+  # - name: Download Virtual Disks from URL list
+  #   ansible.builtin.get_url: #TODO: what if file doesn't download completely?
+  #     url: "{{ item }}"
+  #     dest: "{{image_path}}"  #{{ item | basename }}"
+  #     timeout: 10000
+  #     validate_certs: false
+  #   register: download
+  #   loop: "{{ image_url }}"
+
   - name: Download Virtual Disks from URL list
-    ansible.builtin.get_url: #TODO: what if file doesn't download completely?
+    ansible.builtin.get_url:
       url: "{{ item }}"
-      dest: "{{image_path}}"  #{{ item | basename }}"
+      dest: "{{ image_path }}/{{ item | basename }}"
       timeout: 10000
       validate_certs: false
     register: download
     loop: "{{ image_url }}"
+    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
+
 
   - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
     scale_computing.hypercore.virtual_disk:
