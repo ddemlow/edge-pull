@@ -45,7 +45,6 @@
     scale_computing.hypercore.virtual_disk:
       name: "uploading-{{ item | basename }}"
       state: absent
-    when: image_remove_old
     register: deleted
     loop: "{{ image_url }}"      
 
