@@ -23,6 +23,8 @@
       dest: /tmp/TinyCore-vm-integration.iso
       force: false
     become: true
+    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
+
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
     scale_computing.hypercore.iso:
