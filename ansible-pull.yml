@@ -45,8 +45,8 @@
       loop:
         - 'clusterip="{{ clusterip }}"'
         - 'SC_HOST="https://{{ clusterip }}"'  #this works when executing ansible-pull directly on SCEL host
-        - 'SC_USERNAME="admin"'
-        - 'SC_PASSWORD="admin"'
+        - 'SC_USERNAME="ansible"'
+        - 'SC_PASSWORD="ComplexPassword1234ans"'
 #TODO - above requires reboot to set systemwide environment
 
     - name: Install ansible and docker 
