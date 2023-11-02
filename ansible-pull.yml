@@ -36,7 +36,7 @@
 
   tasks:
 
-    - name: Add environment variables to /etc/environment
+    - name: Add environment variables to /etc/environmenti #TODO - need to create /clusterip.txt with all credentials on setup
       lineinfile:
         path: /etc/environment
         line: "{{ item }}"

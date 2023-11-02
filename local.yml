@@ -26,26 +26,12 @@
     become: true
 #    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
 
-  # - name: check connection to scale_computing.hypercore.cluster_info
-  #   scale_computing.hypercore.cluster_info:
-
-
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
     scale_computing.hypercore.iso:
       name: "TinyCore-current.iso"
       source: "/tmp/TinyCore-vm-integration.iso"
       state: present
     register: result
-
-
-  # - name: Download Virtual Disks from URL list
-  #   ansible.builtin.get_url: #TODO: what if file doesn't download completely?
-  #     url: "{{ item }}"
-  #     dest: "{{image_path}}"  #{{ item | basename }}"
-  #     timeout: 10000
-  #     validate_certs: false
-  #   register: download
-  #   loop: "{{ image_url }}"
 
   - name: Download Virtual Disks from URL list
     ansible.builtin.get_url:
@@ -57,7 +43,6 @@
     loop: "{{ image_url }}"
 #    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
 # TODO skip if file is present - assume it's good
-
 
   - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
     scale_computing.hypercore.virtual_disk:
@@ -174,3 +159,13 @@
           db_data: {}
       state: present
     become: yes
+
+#TODO - could deploy edgeailab container to fleet ... 
+# example running independent playbooks ... would be better for development / troubleshooting  ... could I also use roles here?  
+  # - name: Run manage_containers playbook
+  #   include: manage_containers.yml
+
+  
+
+
+  
