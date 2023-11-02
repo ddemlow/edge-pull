@@ -15,7 +15,7 @@
     SC_TIMEOUT: 2000000
 
   connection: ansible.builtin.local
-  gather_facts: false
+  gather_facts: True
 
   tasks:
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
@@ -78,7 +78,7 @@
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
       vm_name: "{{ vmname }}"
-      description: VM created via ansible-pull running by "{{ inventory_hostname }}" update "{{ ansible_date_time }}" 
+      description: VM created via ansible-pull running by "{{ inventory_hostname }}" update "{{ ansible_date_time.iso8601 }}" 
       state: present
       tags:
         - ansible-pull
