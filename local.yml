@@ -33,6 +33,13 @@
       state: present
     register: result
 
+  - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API #this file is part of repo
+    scale_computing.hypercore.iso:
+      name: "TinyCore-current.iso"
+      source: "~/.ansible/pull/{{ hostname }}/netboot.xyz.iso"
+      state: present
+    register: result
+
   - name: Download Virtual Disks from URL list
     ansible.builtin.get_url:
       url: "{{ item }}"
