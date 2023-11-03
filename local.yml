@@ -22,7 +22,7 @@
     community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4
-      state: absent
+      state: started
       ports:
         - "80:80"
       env:
