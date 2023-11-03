@@ -18,6 +18,51 @@
   gather_facts: True
 
   tasks:
+  - name: Start pgAdmin4 container
+    community.docker.docker_container:
+      name: pgadmin4_demo
+      image: dpage/pgadmin4
+      state: absent
+      ports:
+        - "80:80"
+      env:
+        PGADMIN_DEFAULT_EMAIL: "admin@example.com"
+        PGADMIN_DEFAULT_PASSWORD: "admin"
+    become: yes
+    
+  - name: Deploy the application using Docker Compose
+    community.docker.docker_compose:
+      project_name: wordpress
+      definition:
+        version: '3.3'
+
+        services:
+          db:
+            image: mysql:5.7
+            volumes:
+              - db_data:/var/lib/mysql
+            environment:
+              MYSQL_ROOT_PASSWORD: somewordpress
+              MYSQL_DATABASE: wordpress
+              MYSQL_USER: wordpress
+              MYSQL_PASSWORD: wordpress
+          wordpress:
+            depends_on:
+              - db
+            image: wordpress:latest
+            ports:
+              - "8000:80"
+            environment:
+              WORDPRESS_DB_HOST: db:3306
+              WORDPRESS_DB_USER: wordpress
+              WORDPRESS_DB_PASSWORD: wordpress
+              WORDPRESS_DB_NAME: wordpress
+
+        volumes:
+          db_data: {}
+      state: present
+    become: yes
+
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
     ansible.builtin.get_url:
       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
@@ -121,51 +166,6 @@
           local-hostname: "{{ vmname }}"
       machine_type: BIOS
     register: vm_created
-
-  - name: Start pgAdmin4 container
-    community.docker.docker_container:
-      name: pgadmin4_demo
-      image: dpage/pgadmin4
-      state: absent
-      ports:
-        - "80:80"
-      env:
-        PGADMIN_DEFAULT_EMAIL: "admin@example.com"
-        PGADMIN_DEFAULT_PASSWORD: "admin"
-    become: yes
-    
-  - name: Deploy the application using Docker Compose
-    community.docker.docker_compose:
-      project_name: wordpress
-      definition:
-        version: '3.3'
-
-        services:
-          db:
-            image: mysql:5.7
-            volumes:
-              - db_data:/var/lib/mysql
-            environment:
-              MYSQL_ROOT_PASSWORD: somewordpress
-              MYSQL_DATABASE: wordpress
-              MYSQL_USER: wordpress
-              MYSQL_PASSWORD: wordpress
-          wordpress:
-            depends_on:
-              - db
-            image: wordpress:latest
-            ports:
-              - "8000:80"
-            environment:
-              WORDPRESS_DB_HOST: db:3306
-              WORDPRESS_DB_USER: wordpress
-              WORDPRESS_DB_PASSWORD: wordpress
-              WORDPRESS_DB_NAME: wordpress
-
-        volumes:
-          db_data: {}
-      state: present
-    become: yes
 
 
 #TODO - could deploy edgeailab container to fleet ... 
