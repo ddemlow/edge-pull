@@ -21,7 +21,7 @@
   - name: Start pgAdmin4 container
     community.docker.docker_container:
       name: pgadmin4_demo
-      image: dpage/pgadmin4
+      image: dpage/pgadmin4:7.6
       state: started
       ports:
         - "80:80"
