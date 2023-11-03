@@ -122,6 +122,16 @@
       machine_type: BIOS
     register: vm_created
 
+  - name: Get information about running containers
+    docker_container_info:
+      filters:
+        status: running
+    register: running_containers
+
+  - name: Display the list of running containers
+    debug:
+      var: running_containers.containers
+
   - name: Start pgAdmin4 container
     community.docker.docker_container:
       name: pgadmin4_demo
@@ -133,7 +143,7 @@
         PGADMIN_DEFAULT_EMAIL: "admin@example.com"
         PGADMIN_DEFAULT_PASSWORD: "admin"
     become: yes
-
+    
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
       project_name: wordpress
@@ -166,6 +176,16 @@
           db_data: {}
       state: present
     become: yes
+
+  - name: Get information about running containers
+    docker_container_info:
+      filters:
+        status: running
+    register: running_containers
+
+  - name: Display the list of running containers
+    debug:
+      var: running_containers.containers
 
 #TODO - could deploy edgeailab container to fleet ... 
 # example running independent playbooks ... would be better for development / troubleshooting  ... could I also use roles here?  
