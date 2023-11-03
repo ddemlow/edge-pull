@@ -20,7 +20,7 @@
   tasks:
   - name: Start pgAdmin4 container
     community.docker.docker_container:
-      name: pgadmin4_demo
+      name: pgadmin4_demo_76
       image: dpage/pgadmin4:7.6
       state: started
       ports:
