@@ -124,8 +124,6 @@
 
   - name: Get information about running containers
     docker_container_info:
-      filters:
-        status: running
     register: running_containers
 
   - name: Display the list of running containers
@@ -179,8 +177,6 @@
 
   - name: Get information about running containers
     docker_container_info:
-      filters:
-        status: running
     register: running_containers
 
   - name: Display the list of running containers
