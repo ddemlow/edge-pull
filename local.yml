@@ -126,7 +126,7 @@
     community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4
-      state: started
+      state: stopped
       ports:
         - "80:80"
       env:
