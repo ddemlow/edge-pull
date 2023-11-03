@@ -18,17 +18,17 @@
   gather_facts: True
 
   tasks:
-  - name: Start pgAdmin4 container
-    community.docker.docker_container:
-      name: pgadmin4_demo
-      image: dpage/pgadmin4
-      state: absent
-      ports:
-        - "80:80"
-      env:
-        PGADMIN_DEFAULT_EMAIL: "admin@example.com"
-        PGADMIN_DEFAULT_PASSWORD: "admin"
-    become: yes
+  # - name: Start pgAdmin4 container
+  #   community.docker.docker_container:
+  #     name: pgadmin4_demo
+  #     image: dpage/pgadmin4
+  #     state: present
+  #     ports:
+  #       - "80:80"
+  #     env:
+  #       PGADMIN_DEFAULT_EMAIL: "admin@example.com"
+  #       PGADMIN_DEFAULT_PASSWORD: "admin"
+  #   become: yes
     
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
