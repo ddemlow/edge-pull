@@ -1,26 +1,31 @@
 services:
-  opc-router:
-    image: opcrouter/runtime:latest
-    restart: unless-stopped
-    ports:
-      - "49420:49420"
-      - "8080:8080"
-      - "8081:8081"
+  gitea:
+    image: gitea/gitea:latest
     environment:
-      - OR_I_ACCEPT_EULA=true
-      - INITIAL_USERNAME=admin
-      - INITIAL_PASSWORD=admin
+      - DB_TYPE=postgres
+      - DB_HOST=db:5432
+      - DB_NAME=gitea
+      - DB_USER=gitea
+      - DB_PASSWD=gitea
+    restart: always
     volumes:
-      - type: volume
-        source: opcrouter-configdb
-        target: /data/database
-      - type: volume
-        source: opcrouter-inray
-        target: /inray
-      - type: volume
-        source: opcrouter-logs
-        target: /var/log/opcrouter
+      - git_data:/data
+    ports:
+      - 3000:3000
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    expose:
+      - 5432
 volumes:
-  opcrouter-configdb:
-  opcrouter-inray:
-  opcrouter-logs:
+  db_data:
+  git_data:
+  
+  
+    
