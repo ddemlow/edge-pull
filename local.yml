@@ -74,6 +74,7 @@
       project_name: gitea
       project_src: opc
     become: true
+    ignore_errors: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
   - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
@@ -82,6 +83,7 @@
       dest: /tmp/TinyCore-vm-integration.iso
       force: false
     become: true
+    ignore_errors: true
 #    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
