@@ -73,12 +73,20 @@
   - name: deploy application from docker-compose.yamlfile
     community.docker.docker_compose:
       project_name: gitea
-      project_src: opc
+      project_src: gitea
     become: true
     ignore_errors: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
-  - name: Download ISO image from http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso and save it into /tmp/TinyCore-vm-integration.iso
+  - name: deploy application from docker-compose.yamlfile
+    community.docker.docker_compose:
+      project_name: gitea
+      project_src: opc
+    become: true
+    state: absent
+    ignore_errors: true
+
+  - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
     ansible.builtin.get_url:
       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
       dest: /tmp/TinyCore-vm-integration.iso
