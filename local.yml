@@ -66,7 +66,7 @@
   - name: deploy application from docker-compose.yamlfile
     community.docker.docker_compose:
       project_name: opc
-      definition: docker-compose.yaml 
+      definition: "./docker-compose.yaml"
     become: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
