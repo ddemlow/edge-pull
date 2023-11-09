@@ -78,12 +78,13 @@
     ignore_errors: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
-  - name: deploy application from docker-compose.yamlfile
+  - name: remove old opc app 
     community.docker.docker_compose:
       project_name: gitea
       project_src: opc
+      state: absent
     become: true
-    state: absent
+
     ignore_errors: true
 
   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
