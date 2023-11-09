@@ -60,7 +60,7 @@
 
         volumes:
           db_data: {}
-      state: present
+      state: absent
     become: yes
 
   - name: deploy application from docker-compose.yamlfile
