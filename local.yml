@@ -67,7 +67,8 @@
     community.docker.docker_compose:
       project_name: opensourcepos
       project_src: opensourcepos
-    become: true    
+    become: true
+    ignore_errors: true    
 
   - name: deploy application from docker-compose.yamlfile
     community.docker.docker_compose:
