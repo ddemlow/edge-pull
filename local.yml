@@ -66,14 +66,12 @@
 
   - name: deploy application from docker-compose.yamlfile
     community.docker.docker_compose:
-      project_name: opensourcepos
       project_src: opensourcepos
     become: true
     ignore_errors: true    
 
   - name: deploy application from docker-compose.yamlfile
     community.docker.docker_compose:
-      project_name: gitea
       project_src: gitea
     become: true
     ignore_errors: true
@@ -81,7 +79,6 @@
 
   - name: remove old opc app 
     community.docker.docker_compose:
-      project_name: gitea
       project_src: opc
       state: absent
     become: true
