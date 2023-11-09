@@ -104,6 +104,9 @@
 #        hour: "{{ _hour_ }}"
         state: present
       become: true
+
+# may want to use -f, --force run the playbook even if the repository could not be updated
+# could add -v (vvv) for verbose logging
     
     # - name: Create logrotate entry for ansible-pull.log
     #   become: true

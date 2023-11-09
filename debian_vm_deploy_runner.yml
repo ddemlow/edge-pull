@@ -7,6 +7,18 @@
     image_url: 
       - "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
     image_path: "/tmp/" #~/tmp/" #path to download file
+    _minute_: "*/05"
+    _hour_: 0
+    # User to run ansible-pull as from cron
+    cron_user: ubuntu
+    # File that ansible will use for logs
+    logfile: /tmp/ansible-pull.log
+    # Directory to where repository will be cloned
+    workdir: /var/lib/ansible/local
+    # Repository to check out -- YOU MUST CHANGE THIS
+    # repo must contain a local.yml file at top level
+    repo_url: https://github.com/ddemlow/edge-pull.git
+
   connection: local
   gather_facts: false
   strategy: host_pinned # free  #allows each cluster to start next task before all clusters have finished current task
@@ -121,17 +133,20 @@
                 - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDihWWhjoPj8KVLtdLDwNJQ71zi9An0iUFjefRWu2Eju ddemlow@scalecomputing.com
                 - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTiBEMhRymL0yqDAGF33DVwzfqp2CcyKJOOq5A862ocnOKRVhKoaU6ZfXnyLanqbylMKut5kuCRfq51nR7eBGpM6V0IUe5wlgvRB1HtXJHDBedclRaPWa8XQikk8AOscbmGufcs10TEFDH45L4tJd3ym+VD8mKp7PIge6yvhxaQaPfGx3MafEPm/ISpDLxbNueTIHBUt3WE7lfPXZ3owHIaEEht3L7hXvEqG801x/snT7Y1NJwfEpfD2EClDwoHHdln+UzJyxsbGZgmCgTVmXvnaz833lb2pEvmzfRZQybuXMtFB4/q8evc0CfIhqIcRaLzdImxgV
             disable_root: false # allow ssh root login
-            packages: [qemu-guest-agent, ansible ]
+            packages: [docker, docker-compose, qemu-guest-agent, ansible ]
             runcmd:
               - [ systemctl, restart, --no-block, qemu-guest-agent ]
+              - "ansible-galaxy collection install scale_computing.hypercore"
+              - "ansible-galaxy collection install community.docker"
             write_files:
             - content: "{{ inventory_hostname }}"
               path: /clusterip.txt
           meta_data: |
             dsmode: local
-            local-hostname: "{{ vmname }}"
+            local-hostname: "{{ vmname }}"i
+  
+  #TODO - cloud init everything ^ for runner - pass repository, etc.
 
- #TODO - could register VM with Avassa control tower directly at this stage before even starting VM and remove those steps from cloud-init
  
     - name: Disk desired configuration for "{{ vmname }}"   # seems resizing disk before first boot causes panic on debian11 bulseye unless serial port exists - add SERIAL to tag or description
       scale_computing.hypercore.vm_disk:  
