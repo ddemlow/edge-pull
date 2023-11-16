@@ -8,12 +8,14 @@
         username: 'robot-edgelabs-clients'
         password: 'LWb7bsa9msWphOy8brbXu6XJUlzXhfSV'
         registry_url: 'registry.edgelabs.ai'
+      become: yes
 
     - name: Pull AI Sensor Docker image
       docker_image:
         name: 'registry.edgelabs.ai/ai-sensor/ai-sensor'
         tag: 'latest'
         source: pull
+      become: yes
 
     - name: Run AI Sensor Docker container
       docker_container:
@@ -26,3 +28,4 @@
           - 'NET_ADMIN'
         env:
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
+      become: yes

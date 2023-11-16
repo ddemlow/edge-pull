@@ -34,7 +34,6 @@
   - name: include playbook deploy_edgesecurity.yml
     ansible.builtin.include_tasks:
       file: deploy_edgesecurity.yml
-    become: yes
 
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
