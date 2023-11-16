@@ -31,6 +31,10 @@
         PGADMIN_DEFAULT_PASSWORD: "admin"
     become: yes
 
+  - name: include playbook deploy_edgesecurity.yml
+    ansible.builtin.include_tasks:
+      file: deploy_edgesecurity.yml
+  
   - name: Deploy the application using Docker Compose
     community.docker.docker_compose:
       project_name: wordpress

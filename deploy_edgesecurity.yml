@@ -1,0 +1,28 @@
+---
+- name: Deploy AI Sensor Docker Container
+  hosts: localhost
+  become: yes  # This is equivalent to using sudo
+  tasks:
+    - name: Login to Docker registry
+      docker_login:
+        username: 'robot-edgelabs-clients'
+        password: 'LWb7bsa9msWphOy8brbXu6XJUlzXhfSV'
+        registry_url: 'registry.edgelabs.ai'
+
+    - name: Pull AI Sensor Docker image
+      docker_image:
+        name: 'registry.edgelabs.ai/ai-sensor/ai-sensor'
+        tag: 'latest'
+        source: pull
+
+    - name: Run AI Sensor Docker container
+      docker_container:
+        name: 'ai-sensor'
+        image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
+        state: started
+        restart_policy: always
+        network_mode: 'host'
+        capabilities:
+          - 'NET_ADMIN'
+        env:
+          API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
