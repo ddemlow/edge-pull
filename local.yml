@@ -71,8 +71,8 @@
   - name: deploy application from docker-compose.yaml file - opensourcepos
     community.docker.docker_compose:
       project_src: opensourcepos
+      state: absent
     become: true
-    state: absent
     ignore_errors: true
 
   - name: deploy application from docker-compose.yaml file gitea 
