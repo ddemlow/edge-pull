@@ -1,8 +1,8 @@
----
-- name: Deploy AI Sensor Docker Container
-  hosts: localhost
-  become: yes  # This is equivalent to using sudo
-  tasks:
+# ---
+# - name: Deploy AI Sensor Docker Container
+#   hosts: localhost
+#   become: yes  # This is equivalent to using sudo
+#   tasks:
     - name: Login to Docker registry
       docker_login:
         username: 'robot-edgelabs-clients'
