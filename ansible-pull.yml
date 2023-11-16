@@ -49,6 +49,18 @@
         - 'SC_PASSWORD="ComplexPassword1234ans"'
 #TODO - above requires reboot to set systemwide environment
 
+    - name: add ansible apt repo #need latest upstream ansible
+      ansible.builtin.apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+      become: true
+
+    - name: update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+      become: true
+    
     - name: Install ansible and docker 
       become: true
       ansible.builtin.package:
@@ -85,15 +97,15 @@
       file: path={{ workdir }} state=directory owner=root group=root mode=0751
 
 # should be able to use localhost and execute against single hypercore cluster - use cloud-init to create file setting ip for cluster
-    - name: Copy ansible inventory file to from /clusterip.txt to /etc/ansible/hosts
-      ansible.builtin.copy:
-        remote_src: true
-        src:  /clusterip.txt
-        dest: '{{workdir}}/inventory'
-        owner: root
-        group: root
-        mode: u=rw,g=r,o=r
-      become: true
+    # - name: Copy ansible inventory file to from /clusterip.txt to /etc/ansible/hosts
+    #   ansible.builtin.copy:
+    #     remote_src: true
+    #     src:  /clusterip.txt
+    #     dest: '{{workdir}}/inventory'
+    #     owner: root
+    #     group: root
+    #     mode: u=rw,g=r,o=r
+    #   become: true
 
     - name: Create crontab entry to run ansible-pull against repo_url every "{{ _hour_ }}" hour and "{{ _minutes_ }}" minutes
       ansible.builtin.cron:

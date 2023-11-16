@@ -31,11 +31,11 @@
         PGADMIN_DEFAULT_PASSWORD: "admin"
     become: yes
 
-  - name: include playbook deploy_edgesecurity.yml
+  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
       file: deploy_edgesecurity.yml
 
-  - name: Deploy the application using Docker Compose
+  - name: Deploy the application using Docker Compose defined in playbook
     community.docker.docker_compose:
       project_name: wordpress
       definition:
@@ -68,26 +68,25 @@
       state: present
     become: yes
 
-  - name: deploy application from docker-compose.yamlfile
+  - name: deploy application from docker-compose.yaml file - opensourcepos
     community.docker.docker_compose:
       project_src: opensourcepos
     become: true
-    ignore_errors: true    
+    ignore_errors: true
 
-  - name: deploy application from docker-compose.yamlfile
+  - name: deploy application from docker-compose.yaml file gitea 
     community.docker.docker_compose:
       project_src: gitea
     become: true
     ignore_errors: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
-  - name: remove old opc app 
-    community.docker.docker_compose:
-      project_src: opc
-      state: absent
-    become: true
-
-    ignore_errors: true
+  # - name: remove old opc app 
+  #   community.docker.docker_compose:
+  #     project_src: opc
+  #     state: absent
+  #   become: true
+    # ignore_errors: true
 
   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
     ansible.builtin.get_url:
@@ -118,6 +117,7 @@
       dest: "{{ image_path }}/{{ item | basename }}"
       timeout: 10000
       validate_certs: false
+      force: false
     register: download
     loop: "{{ image_url }}"
 #    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
