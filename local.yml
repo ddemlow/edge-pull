@@ -3,6 +3,7 @@
 # currently downloads iso from internet, uploads it to each cluster media, creates VM that boots from iso
 # inside "runner" vm deploys simple docker container plus a docker compose configuration
 # other things this could do might include downloading virtual disks locally and then uploading them to cluster, could load SAMBA container for file share, etc.
+# TODO - some locking to see if previous ansible pull is done 
   hosts: localhost
   vars:
     vmname: pull-tinycore
@@ -82,126 +83,110 @@
     ignore_errors: true
 #todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
-  # - name: remove old opc app 
-  #   community.docker.docker_compose:
-  #     project_src: opc
-  #     state: absent
-  #   become: true
-    # ignore_errors: true
+#   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
+#     ansible.builtin.get_url:
+#       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
+#       dest: /tmp/TinyCore-vm-integration.iso
+#       force: false
+#     become: true
+#     ignore_errors: true
+# #    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
 
-  - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
-    ansible.builtin.get_url:
-      url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
-      dest: /tmp/TinyCore-vm-integration.iso
-      force: false
-    become: true
-    ignore_errors: true
-#    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
+#   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
+#     scale_computing.hypercore.iso:
+#       name: "TinyCore-current.iso"
+#       source: "/tmp/TinyCore-vm-integration.iso"
+#       state: present
+#     register: result
 
-  - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
-    scale_computing.hypercore.iso:
-      name: "TinyCore-current.iso"
-      source: "/tmp/TinyCore-vm-integration.iso"
-      state: present
-    register: result
+#   - name: Upload ISO image netboot.xyz.iso from repo clone to HyperCore API #this file is part of repo - note path for git clone
+#     scale_computing.hypercore.iso:
+#       name: "netboot.xyz.iso"
+#       source: "/home/ubuntu/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
+#       state: present
+#     register: result
 
-  - name: Upload ISO image netboot.xyz.iso from repo clone to HyperCore API #this file is part of repo - note path for git clone
-    scale_computing.hypercore.iso:
-      name: "netboot.xyz.iso"
-      source: "/home/ubuntu/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
-      state: present
-    register: result
+#   - name: Download Virtual Disks from URL list
+#     ansible.builtin.get_url:
+#       url: "{{ item }}"
+#       dest: "{{ image_path }}/{{ item | basename }}"
+#       timeout: 10000
+#       validate_certs: false
+#       force: false
+#     register: download
+#     loop: "{{ image_url }}"
 
-  - name: Download Virtual Disks from URL list
-    ansible.builtin.get_url:
-      url: "{{ item }}"
-      dest: "{{ image_path }}/{{ item | basename }}"
-      timeout: 10000
-      validate_certs: false
-      force: false
-    register: download
-    loop: "{{ image_url }}"
 #    when: "not (ansible.builtin.stat(image_path + '/' + (item | basename)).stat.exists | default(false))"
 # TODO skip if file is present - assume it's good
 
-  - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
-    scale_computing.hypercore.virtual_disk:
-      name: "uploading-{{ item | basename }}"
-      state: absent
-    register: deleted
-    loop: "{{ image_url }}"      
+  # - name: Delete existing uploading-"{{ item | basename }}" virtual disk # this is just to clean up previous aborts
+  #   scale_computing.hypercore.virtual_disk:
+  #     name: "uploading-{{ item | basename }}"
+  #     state: absent
+  #   register: deleted
+  #   loop: "{{ image_url }}"      
 
-  - name: Upload Virtual Disk {{ item | basename }}" to HyperCore "{{ ansible_hostname }}"
-    scale_computing.hypercore.virtual_disk:
-      name: "{{ item | basename }}"
-      source: "{{image_path}}/{{ item | basename }}"
-      state: present
-    register: uploadResult
-    loop: "{{ image_url }}" 
-    ignore_errors: true
+  # - name: Upload Virtual Disk {{ item | basename }}" to HyperCore "{{ ansible_hostname }}"
+  #   scale_computing.hypercore.virtual_disk:
+  #     name: "{{ item | basename }}"
+  #     source: "{{image_path}}/{{ item | basename }}"
+  #     state: present
+  #   register: uploadResult
+  #   loop: "{{ image_url }}" 
+  #   ignore_errors: true
 
-  - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
-    scale_computing.hypercore.vm:
-      vm_name: "{{ vmname }}"
-      description: VM created via ansible-pull running by "{{ ansible_hostname }}" # update "{{ ansible_date_time.iso8601 }}" 
-      state: present
-      tags:
-        - ansible-pull
-        - "{{ vmname }}"
-      memory: "{{ '1GB' | human_to_bytes }}"
-      vcpu: 2
-      power_state: start
-      force_reboot: true
-      disks:
-        - type: ide_cdrom
-          disk_slot: 0
-          iso_name: "TinyCore-current.iso"
-        - type: virtio_disk
-          disk_slot: 0
-          size: "{{ '10 GB' | human_to_bytes }}"
-      nics:
-        - vlan: 0
-          type: virtio
-      boot_devices:
-        - type: ide_cdrom
-          disk_slot: 0
-        - type: virtio_disk
-          disk_slot: 0
-      cloud_init:
-        user_data: |
-          #cloud-config
-          password: "password"
-          chpasswd: { expire: False }
-          ssh_pwauth: True
-          apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
-          packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
-          bootcmd:
-            - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo update-grub' ]
-          runcmd:
-            - [ systemctl, restart, --no-block, qemu-guest-agent ]
-          write_files:
-          # configure docker daemon to be accessible remotely via TCP on socket 2375
-          - content: |
-              [Service]
-              ExecStart=
-              ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
-            path: /etc/systemd/system/docker.service.d/options.conf
-        meta_data: |
-          dsmode: local
-          local-hostname: "{{ vmname }}"
-      machine_type: BIOS
-    register: vm_created
+  # - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
+  #   scale_computing.hypercore.vm:
+  #     vm_name: "{{ vmname }}"
+  #     description: VM created via ansible-pull running by "{{ ansible_hostname }}" # update "{{ ansible_date_time.iso8601 }}" 
+  #     state: present
+  #     tags:
+  #       - ansible-pull
+  #       - "{{ vmname }}"
+  #     memory: "{{ '1GB' | human_to_bytes }}"
+  #     vcpu: 2
+  #     power_state: start
+  #     force_reboot: true
+  #     disks:
+  #       - type: ide_cdrom
+  #         disk_slot: 0
+  #         iso_name: "TinyCore-current.iso"
+  #       - type: virtio_disk
+  #         disk_slot: 0
+  #         size: "{{ '10 GB' | human_to_bytes }}"
+  #     nics:
+  #       - vlan: 0
+  #         type: virtio
+  #     boot_devices:
+  #       - type: ide_cdrom
+  #         disk_slot: 0
+  #       - type: virtio_disk
+  #         disk_slot: 0
+  #     cloud_init:
+  #       user_data: |
+  #         #cloud-config
+  #         password: "password"
+  #         chpasswd: { expire: False }
+  #         ssh_pwauth: True
+  #         apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
+  #         packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
+  #         bootcmd:
+  #           - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
+  #           - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
+  #           - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
+  #           - [ sh, -c, 'sudo update-grub' ]
+  #         runcmd:
+  #           - [ systemctl, restart, --no-block, qemu-guest-agent ]
+  #         write_files:
+  #         # configure docker daemon to be accessible remotely via TCP on socket 2375
+  #         - content: |
+  #             [Service]
+  #             ExecStart=
+  #             ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
+  #           path: /etc/systemd/system/docker.service.d/options.conf
+  #       meta_data: |
+  #         dsmode: local
+  #         local-hostname: "{{ vmname }}"
+  #     machine_type: BIOS
+  #   register: vm_created
 
-
-#TODO - could deploy edgeailab container to fleet ... 
-# example running independent playbooks ... would be better for development / troubleshooting  ... could I also use roles here?  
-  # - name: Run manage_containers playbook
-  #   include: manage_containers.yml
-
-  
-
-
-  
