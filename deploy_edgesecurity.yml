@@ -1,7 +1,7 @@
 # ---
 # - name: Deploy AI Sensor Docker Container
 #   hosts: localhost
-#   become: yes  # This is equivalent to using sudo
+#   become: yes  
 #   tasks:
     - name: Login to Docker registry
       docker_login:
