@@ -80,6 +80,15 @@
     become: true
     ignore_errors: true
 
+  - name: Get Docker container info
+    community.docker.docker_container_info:
+    register: docker_info
+
+  - name: Display Docker container info
+    debug:
+      msg: "{{ docker_info.results }}"
+
+
 #   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
 #     ansible.builtin.get_url:
 #       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
