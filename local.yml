@@ -90,6 +90,10 @@
     debug:
       var: docker_ps.stdout_lines
 
+  - name: last update time
+    ansible.builtin.debug:
+      msg: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
   # - name: Get info on docker host and list images
   #   community.docker.docker_host_info:
   #     containers: true
