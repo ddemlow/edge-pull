@@ -87,12 +87,11 @@
   
   - name: Print Docker container list
     debug:
-      var: docker_ps
+      var: docker_ps.stdout_lines
 
   - name: List all Docker containers
     community.docker.docker_container_info:
       name: '*'
-      state: 'list'
     register: docker_containers
     become: true
 
