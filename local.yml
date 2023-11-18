@@ -1,8 +1,6 @@
 ---
-- name: Playbook automatically run by ansible-pull 
-# currently downloads iso from internet, uploads it to each cluster media, creates VM that boots from iso
+- name: Playbook automatically run by ansible-pull across edge fleet 
 # inside "runner" vm deploys simple docker container plus a docker compose configuration
-# other things this could do might include downloading virtual disks locally and then uploading them to cluster, could load SAMBA container for file share, etc.
 # TODO - some locking to see if previous ansible pull is done 
   hosts: localhost
   vars:
@@ -19,7 +17,7 @@
   gather_facts: True
 
   tasks:
-  - name: Start pgAdmin4 container
+  - name: Manage pgAdmin4 container state and version
     community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4:7.8
@@ -36,7 +34,7 @@
     ansible.builtin.include_tasks:
       file: deploy_edgesecurity.yml
 
-  - name: Deploy the application using Docker Compose defined in playbook
+  - name: Manage wordpress application using Docker Compose values in playbook
     community.docker.docker_compose:
       project_name: wordpress
       definition:
@@ -69,19 +67,18 @@
       state: present
     become: yes
 
-  - name: deploy application from docker-compose.yaml file - opensourcepos
+  - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
     community.docker.docker_compose:
       project_src: opensourcepos
       state: absent
     become: true
     ignore_errors: true
 
-  - name: deploy application from docker-compose.yaml file gitea 
+  - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
       project_src: gitea
     become: true
     ignore_errors: true
-#todo - appears it would be easy to structure mulitple apps in their own directories and loop through many
 
 #   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
 #     ansible.builtin.get_url:
