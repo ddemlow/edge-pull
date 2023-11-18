@@ -93,6 +93,7 @@
     community.docker.docker_host_info:
       images: true
     register: result
+    become: true
 
   - name: Print Docker container list
     debug:
