@@ -86,7 +86,7 @@
     become: true
     changed_when: false
   
-  - name: Print Docker container list
+  - name: Print Docker container list (running)
     debug:
       var: docker_ps.stdout_lines
 
@@ -94,7 +94,7 @@
     ansible.builtin.debug:
       msg: "{{ ansible_date_time.time }}" #"{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
-  # - name: Get info on docker host and list images
+  # - name: Get info on docker host and list containers
   #   community.docker.docker_host_info:
   #     containers: true
   #   register: result
