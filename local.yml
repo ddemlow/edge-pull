@@ -84,6 +84,7 @@
     command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
     register: docker_ps
     become: true
+    changed_when: false
   
   - name: Print Docker container list
     debug:
