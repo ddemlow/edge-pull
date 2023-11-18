@@ -92,7 +92,6 @@
   - name: Get info on docker host and list images
     community.docker.docker_host_info:
       containers: true
-      containers_filters: running
     register: result
     become: true
 
