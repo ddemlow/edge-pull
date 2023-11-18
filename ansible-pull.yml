@@ -22,7 +22,7 @@
     ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
     ansible_ssh_private_key_file: ~/.ssh/github.pub
     ansible_ssh_user: ubuntu
-    _minute_: "*/15"
+    _minute_: "*/05"
     _hour_: 0
     # User to run ansible-pull as from cron
     cron_user: ubuntu

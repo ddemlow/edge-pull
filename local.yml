@@ -90,7 +90,7 @@
     debug:
       var: docker_ps.stdout_lines
 
-  - name: last update time
+  - name: last update time (UTC)
     ansible.builtin.debug:
       msg: "{{ ansible_date_time.time }}" #"{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
