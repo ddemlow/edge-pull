@@ -98,7 +98,7 @@
   - name: Print Docker container list
     debug:
       msg: item.Names
-    loop: result.containers
+    loop: result.containers | from_yaml_all | list
 
 
 #   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
