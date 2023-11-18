@@ -82,6 +82,7 @@
 
   - name: Get Docker container info
     community.docker.docker_container_info:
+      name: "{{ item }}"
     register: docker_info
 
   - name: Display Docker container info
