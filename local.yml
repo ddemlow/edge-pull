@@ -89,15 +89,14 @@
     debug:
       var: docker_ps.stdout_lines
 
-  - name: List all Docker containers
-    community.docker.docker_container_info:
-      name: '*'
-    register: docker_containers
-    become: true
+  - name: Get info on docker host and list images
+    community.docker.docker_host_info:
+      images: true
+    register: result
 
   - name: Print Docker container list
     debug:
-      var: docker_containers
+      var: result
 
 
 #   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
