@@ -82,11 +82,15 @@
 
   - name: Gather information about all running containers
     command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
-    register: docker_info
+    register: docker_ps
     become: true
+  
+  - name: Print Docker container list
+    debug:
+      var: docker_ps
 
   - name: List all Docker containers
-    community.docker.docker_container:
+    community.docker.docker_container_info:
       name: '*'
       state: 'list'
     register: docker_containers
