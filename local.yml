@@ -80,14 +80,17 @@
     become: true
     ignore_errors: true
 
-  - name: Get Docker container info
+  - name: Gather information about all running containers
     community.docker.docker_container_info:
-      name: "{{ item }}"
+      filters:
+        status:
+          - running
     register: docker_info
 
-  - name: Display Docker container info
+  - name: Display names of running containers
     debug:
-      msg: "{{ docker_info.results }}"
+      msg: "Container Name: {{ item.Names[0] }}"
+    loop: "{{ docker_info.containers }}"
 
 
 #   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
