@@ -17,12 +17,12 @@
         source: pull
       become: yes
 
-    - name: Run AI Sensor Docker container
+    - name: Manage AI Sensor Docker container
       docker_container:
         name: 'ai-sensor'
         image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
         state: started
-#       restart_policy: always
+        restart_policy: always
         network_mode: 'host'
         capabilities:
           - 'NET_ADMIN'
