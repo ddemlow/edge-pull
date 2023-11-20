@@ -14,7 +14,7 @@
       disks:
         - type: ide_cdrom
           disk_slot: 0
-          iso_name: "netboot.zyz.iso"
+          iso_name: "netboot.xyz.iso"
         - type: virtio_disk
           disk_slot: 0
           size: "{{ '10 GB' | human_to_bytes }}"
