@@ -5,6 +5,7 @@
   hosts: localhost
   roles:
   - media_library
+  - netboot_vm
   vars:
     vmname: pull-tinycore
     image_path: /tmp
