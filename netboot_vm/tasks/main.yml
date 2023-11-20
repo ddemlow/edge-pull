@@ -24,9 +24,9 @@
         - vlan: 0
           type: virtio
       boot_devices:
-        - type: ide_cdrom
-          disk_slot: 0
         - type: virtio_disk
+          disk_slot: 0
+        - type: ide_cdrom
           disk_slot: 0
       # cloud_init:
       #   user_data: |

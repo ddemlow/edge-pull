@@ -21,8 +21,6 @@
       source: "/home/ubuntu/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
       state: present
     register: result
-    environment:
-      ANSIBLE_DEPRECATION_WARNINGS: "False"
 
   # - name: Download Virtual Disks from URL list
   #   ansible.builtin.get_url:
