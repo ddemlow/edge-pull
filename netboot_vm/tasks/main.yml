@@ -2,7 +2,7 @@
 #tasks file for netboot_vm
   - name: Create and start the VM with disks, nics and boot devices set. Attach ISO onto the VM. Add cloud init data
     scale_computing.hypercore.vm:
-      vm_name: "netboot_xyz_template"
+      vm_name: "netboot_xyz_template-{{ ansible_hostname }}" 
       description: VM created via ansible-pull running by "{{ ansible_hostname }}" # update "{{ ansible_date_time.iso8601 }}" 
       state: present
       tags:
