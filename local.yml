@@ -15,6 +15,7 @@
     image_filename: "{{ image_url[0] | split('/') | last }}"  # only works for first in list
   environment:  # if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_TIMEOUT: 2000000
+    deprecation_warnings: False
 
   connection: ansible.builtin.local
   gather_facts: True
@@ -83,19 +84,20 @@
     become: true
     ignore_errors: true
 
+  post_tasks:
   - name: Gather information about all running containers
-    command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+    ansible.builtin.command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
     register: docker_ps
     become: true
     changed_when: false
-  
+
   - name: Print Docker container list (running)
-    debug:
+    ansible.builtin.debug:
       var: docker_ps.stdout_lines
 
-  - name: last update time (UTC)
+  - name: Last update time (UTC)
     ansible.builtin.debug:
-      msg: "{{ ansible_date_time.time }}" #"{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+      msg: "{{ ansible_date_time.time }}" # "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
   # - name: Get info on docker host and list containers
   #   community.docker.docker_host_info:
