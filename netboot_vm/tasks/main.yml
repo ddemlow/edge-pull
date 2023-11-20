@@ -26,32 +26,30 @@
           disk_slot: 0
         - type: virtio_disk
           disk_slot: 0
-      cloud_init:
-        user_data: |
-          #cloud-config
-          password: "password"
-          chpasswd: { expire: False }
-          ssh_pwauth: True
-          apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
-          packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
-          bootcmd:
-            - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-            - [ sh, -c, 'sudo update-grub' ]
-          runcmd:
-            - [ systemctl, restart, --no-block, qemu-guest-agent ]
-          write_files:
-          # configure docker daemon to be accessible remotely via TCP on socket 2375
-          - content: |
-              [Service]
-              ExecStart=
-              ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
-            path: /etc/systemd/system/docker.service.d/options.conf
-        meta_data: |
-          dsmode: local
-          local-hostname: "{{ vmname }}"
+      # cloud_init:
+      #   user_data: |
+      #     #cloud-config
+      #     password: "password"
+      #     chpasswd: { expire: False }
+      #     ssh_pwauth: True
+      #     apt: {sources: {docker.list: {source: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable', keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88}}}
+      #     packages: [qemu-guest-agent, docker-ce, docker-ce-cli, docker-compose, ansible, git, unzip]
+      #     bootcmd:
+      #       - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
+      #       - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
+      #       - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
+      #       - [ sh, -c, 'sudo update-grub' ]
+      #     runcmd:
+      #       - [ systemctl, restart, --no-block, qemu-guest-agent ]
+      #     write_files:
+      #     # configure docker daemon to be accessible remotely via TCP on socket 2375
+      #     - content: |
+      #         [Service]
+      #         ExecStart=
+      #         ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375
+      #       path: /etc/systemd/system/docker.service.d/options.conf
+      #   meta_data: |
+      #     dsmode: local
+      #     local-hostname: "{{ vmname }}"
       machine_type: BIOS
     register: vm_created
-    environment:
-      ANSIBLE_DEPRECATION_WARNINGS: "False"
