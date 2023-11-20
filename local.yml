@@ -59,7 +59,7 @@
               - db
             image: wordpress:latest
             ports:
-              - "80:4080"
+              - "4080:80"
             environment:
               WORDPRESS_DB_HOST: db:3306
               WORDPRESS_DB_USER: wordpress
