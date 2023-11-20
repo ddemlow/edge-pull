@@ -15,7 +15,7 @@
     image_filename: "{{ image_url[0] | split('/') | last }}"  # only works for first in list
   environment:  # if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_TIMEOUT: 2000000
-    ANSIBLE_DEPRECATION_WARNINGS: "False"
+    ANSIBLE_DEPRECATION_WARNINGS: false
 
   connection: ansible.builtin.local
   gather_facts: True
