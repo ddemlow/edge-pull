@@ -53,3 +53,5 @@
           local-hostname: "{{ vmname }}"
       machine_type: BIOS
     register: vm_created
+    environment:
+      ANSIBLE_DEPRECATION_WARNINGS: "False"
