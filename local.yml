@@ -68,7 +68,7 @@
 
         volumes:
           db_data: {}
-      state: absent
+      state: present
     become: yes
 
   - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
