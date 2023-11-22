@@ -32,6 +32,7 @@
         state: started
         restart_policy: always
         network_mode: 'host'
+        recreate: yes
         capabilities:
           - 'NET_ADMIN'
         env:
