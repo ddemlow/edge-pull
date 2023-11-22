@@ -10,6 +10,7 @@
         name: 'ai-sensor'
       register: running_container
       failed_when: running_container.containers[0].Image is undefined
+      become: yes
 
     - name: Pull AI Sensor Docker image
       docker_image:
