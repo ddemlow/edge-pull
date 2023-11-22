@@ -68,7 +68,7 @@
 
         volumes:
           db_data: {}
-      state: present
+      state: absent
     become: yes
 
   - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
@@ -81,7 +81,7 @@
   - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
       project_src: gitea
-      state: present
+      state: absent
     become: true
     ignore_errors: true
 
