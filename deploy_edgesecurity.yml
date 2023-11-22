@@ -1,8 +1,3 @@
-# ---
-# - name: Deploy AI Sensor Docker Container
-#   hosts: localhost
-#   become: yes  
-#   tasks:
     - name: Login to Docker registry
       docker_login:
         username: 'robot-edgelabs-clients'
@@ -54,7 +49,7 @@
         env:
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
       become: yes
-     when: update_container | default(false)
+      when: update_container | default(false)
 
     - name: Clean up old images
       community.docker.docker_image_prune:
