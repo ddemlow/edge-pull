@@ -22,19 +22,6 @@
   gather_facts: True
 
   pre_tasks:
-  - name: Manage pgAdmin4 container state and version
-    community.docker.docker_container:
-      name: pgadmin4_demo
-      image: dpage/pgadmin4:7.8
-      state: absent #started
-      ports:
-        - "3080:80"
-        - "443:3443"
-      env:
-        PGADMIN_DEFAULT_EMAIL: "admin@example.com"
-        PGADMIN_DEFAULT_PASSWORD: "admin"
-    become: yes
-
   - name: Manage wordpress application using Docker Compose values in playbook
     community.docker.docker_compose:
       project_name: wordpress
@@ -68,6 +55,13 @@
       state: "{{ demo_state }}"
     become: yes
 
+  - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
+    community.docker.docker_compose:
+      project_src: gitea
+      state: "{{ demo_state }}"
+    become: true
+    ignore_errors: true
+
   # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
   #   community.docker.docker_compose:
   #     project_src: opensourcepos
@@ -75,12 +69,18 @@
   #   become: true
   #   ignore_errors: true
 
-  - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
-    community.docker.docker_compose:
-      project_src: gitea
-      state: "{{ demo_state }}"
-    become: true
-    ignore_errors: true
+  - name: Manage pgAdmin4 container state and version
+    community.docker.docker_container:
+      name: pgadmin4_demo
+      image: dpage/pgadmin4:7.8
+      state: absent #started
+      ports:
+        - "3080:80"
+        - "443:3443"
+      env:
+        PGADMIN_DEFAULT_EMAIL: "admin@example.com"
+        PGADMIN_DEFAULT_PASSWORD: "admin"
+    become: yes    
 
   - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
