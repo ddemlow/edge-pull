@@ -26,7 +26,7 @@
     community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4:7.8
-      state: started
+      state: absent #started
       ports:
         - "3080:80"
         - "443:3443"
