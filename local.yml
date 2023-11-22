@@ -25,7 +25,7 @@
     community.docker.docker_container:
       name: pgadmin4_demo
       image: dpage/pgadmin4:7.8
-      state: absent #started
+      state: started
       ports:
         - "3080:80"
         - "443:3443"
@@ -68,7 +68,7 @@
 
         volumes:
           db_data: {}
-      state: absent
+      state: present
     become: yes
 
   - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
@@ -81,7 +81,7 @@
   - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
       project_src: gitea
-      state: absent
+      state: present
     become: true
     ignore_errors: true
 
