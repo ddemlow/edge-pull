@@ -51,10 +51,15 @@
       become: yes
       when: update_container | default(false)
 
-    # - name: Clean up old images
-    #   community.docker.docker_image_prune:
-    #     state: present
-    #   when: image_pull.changed
+    - name: Clean up old images
+      community.docker.docker_image_prune:
+        containers: true
+        images: true
+        networks: true
+        volumes: true
+        builder_cache: true
+      when: image_pull.changed
+      become: yes
 
 #TODO - update
 # docker stop ai-sensor 
