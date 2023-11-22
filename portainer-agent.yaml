@@ -21,3 +21,4 @@
           EDGE_ASYNC: "1"
           PORTAINER_GROUP: "3"
           PORTAINER_TAGS: "9"
+      become: yes
