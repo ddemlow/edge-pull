@@ -7,6 +7,7 @@
   - media_library
   - netboot_vm
   vars:
+    demo_state: absent # or present 
     vmname: pull-tinycore
     # image_path: /tmp
     # image_url:
@@ -64,7 +65,7 @@
 
         volumes:
           db_data: {}
-      state: present
+      state: "{{ demo_state }}"
     become: yes
 
   # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
@@ -77,7 +78,7 @@
   - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
       project_src: gitea
-      state: present
+      state: "{{ demo_state }}"
     become: true
     ignore_errors: true
 
