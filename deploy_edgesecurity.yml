@@ -21,7 +21,7 @@
       docker_container:
         name: 'ai-sensor'
         image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
-        state: started
+        state: stopped
         restart_policy: always
         network_mode: 'host'
         capabilities:
@@ -29,3 +29,11 @@
         env:
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
       become: yes
+
+#TODO - update
+# docker stop ai-sensor 
+# docker rm ai-sensor 
+# docker pull registry.edgelabs.ai/ai-sensor/ai-sensor:latest 
+# or 
+# docker pull registry.edgelabs.ai/ai-sensor/ai-sensor-arm:latest (for arm64) docker pull registry.edgelabs.ai/ai-sensor/ai-sensor-arm:latest (for multiplatform) 
+# docker run … (from step 4 depending arch) 
