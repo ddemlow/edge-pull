@@ -67,12 +67,12 @@
       state: present
     become: yes
 
-  - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
-    community.docker.docker_compose:
-      project_src: opensourcepos
-      state: absent
-    become: true
-    ignore_errors: true
+  # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
+  #   community.docker.docker_compose:
+  #     project_src: opensourcepos
+  #     state: absent
+  #   become: true
+  #   ignore_errors: true
 
   - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
@@ -85,7 +85,7 @@
     ansible.builtin.include_tasks:
       file: deploy_edgesecurity.yml    
 
-  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
+  - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
       file: portainer-agent.yaml
 
