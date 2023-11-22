@@ -10,12 +10,24 @@
         registry_url: 'registry.edgelabs.ai'
       become: yes
 
+    - name: Get running container image version
+      community.docker.docker_container_info:
+        name: 'ai-sensor'
+      register: running_container
+      failed_when: running_container.containers[0].Image is undefined
+
     - name: Pull AI Sensor Docker image
       docker_image:
         name: 'registry.edgelabs.ai/ai-sensor/ai-sensor'
         tag: 'latest'
         source: pull
       become: yes
+      register: image_pull
+
+    - name: Compare image versions
+      set_fact:
+        update_container: "{{ running_container.containers[0].Image != image_pull.image.id }}"
+#      when: image_pull is changed
 
     - name: Manage AI Sensor Docker container
       docker_container:
@@ -29,6 +41,25 @@
         env:
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
       become: yes
+
+    - name: Recreate container with new image
+      community.docker.docker_container:
+        name: "ai-sensor"
+        image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
+        state: started
+        recreate: yes
+        restart_policy: always
+        capabilities:
+          - 'NET_ADMIN'
+        env:
+          API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
+      become: yes
+     when: update_container | default(false)
+
+    - name: Clean up old images
+      community.docker.docker_image_prune:
+        state: present
+      when: image_pull.changed
 
 #TODO - update
 # docker stop ai-sensor 
