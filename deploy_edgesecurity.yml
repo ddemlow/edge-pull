@@ -29,7 +29,7 @@
       docker_container:
         name: 'ai-sensor'
         image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
-        state: stopped
+        state: started
         restart_policy: always
         network_mode: 'host'
         capabilities:
