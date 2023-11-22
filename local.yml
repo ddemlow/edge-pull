@@ -34,10 +34,6 @@
         PGADMIN_DEFAULT_PASSWORD: "admin"
     become: yes
 
-  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
-    ansible.builtin.include_tasks:
-      file: deploy_edgesecurity.yml
-
   - name: Manage wordpress application using Docker Compose values in playbook
     community.docker.docker_compose:
       project_name: wordpress
@@ -84,6 +80,14 @@
       state: present
     become: true
     ignore_errors: true
+
+  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
+    ansible.builtin.include_tasks:
+      file: deploy_edgesecurity.yml    
+
+  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
+    ansible.builtin.include_tasks:
+      file: portainer-agent.yaml
 
   post_tasks:
   - name: Gather information about all running containers

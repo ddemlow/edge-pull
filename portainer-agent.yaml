@@ -1,0 +1,23 @@
+    - name: Set Portainer Edge ID to Hostname
+      ansible.builtin.set_fact:
+        portainer_edge_id: "{{ ansible_hostname }}"
+
+    - name: Run Portainer Edge Agent Container
+      community.docker.docker_container:
+        name: portainer_edge_agent
+        image: portainer/agent:2.19.3
+        state: started
+        restart_policy: always
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /var/lib/docker/volumes:/var/lib/docker/volumes
+          - /:/host
+          - portainer_agent_data:/data
+        env:
+          EDGE: "1"
+          EDGE_ID: "{{ portainer_edge_id }}"
+          EDGE_KEY: "aHR0cHM6Ly8yMC44OC4yMi4yMjc6OTQ0M3wyMC44OC4yMi4yMjc6ODAwMHwydXByOUtuYTd6ZHBNWExNMm9meDNubHZEOHh2THpLVjN5WnlXM1lsWFdvPXww"
+          EDGE_INSECURE_POLL: "1"
+          EDGE_ASYNC: "1"
+          PORTAINER_GROUP: "3"
+          PORTAINER_TAGS: "9"
