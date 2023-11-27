@@ -111,7 +111,7 @@
 
   - name: vm update 
     scale_computing.hypercore.vm_info:
-      vmn_ame: "{{ inventory_hostname }}"
+      vm_name: "{{ inventory_hostname }}"
     register: vm_info
 
   - name: output vm_info variable
