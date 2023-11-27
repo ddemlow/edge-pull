@@ -151,6 +151,13 @@
                 CLUSTERIP="{{ inventory_hostname }}"
               owner: root:root
               permissions: '0644'
+            - path: /etc/sudoers.d/preserve-env
+              content: |
+                Defaults env_keep += "SC_HOST"
+                Defaults env_keep += "SC_USERNAME"
+                Defaults env_keep += "SC_PASSWORD"
+              owner: root:root
+              permissions: '0440'
           meta_data: |
             dsmode: local
             local-hostname: "{{ vmname }}"
