@@ -114,8 +114,9 @@
       vmn_ame: "{{ inventory_hostname }}"
     register: vm_info
 
-  - name: output vm information
-    var: vm_info
+  - name: output vm_info variable
+    debug:
+      var: vm_info
 
 
 
