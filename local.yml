@@ -111,7 +111,7 @@
 
   - name: Print Docker container list (running)
     ansible.builtin.debug:
-      msg: "Container count: {{ docker_container_count }} List: {{ docker_ps.stdout_lines }}""
+      msg: "Container count: {{ docker_container_count }} List: {{ docker_ps.stdout_lines }}"
 
 #TODO - could update tags on runner VM - based on UUID to include container__{{name}}
 # every runner should have env variables with credentials for the cluster it's on ... and host uuid should be the VM uuid 
