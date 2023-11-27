@@ -1,5 +1,5 @@
 ---
-#tasks file for netboot_vm
+#tasks file for netboot_vm role - ansible pull demo
   - name: Manage netboot_xyz-template vm 
     scale_computing.hypercore.vm:
       vm_name: "netboot_xyz_template-{{ ansible_hostname }}" 

@@ -18,7 +18,7 @@
   - name: Upload ISO image netboot.xyz.iso from repo clone to HyperCore API #this file is part of repo - note path for git clone
     scale_computing.hypercore.iso:
       name: "netboot.xyz.iso"
-      source: "/home/ubuntu/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
+      source: "~/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
       state: present
     register: result
 
