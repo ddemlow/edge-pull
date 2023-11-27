@@ -95,6 +95,7 @@
     ansible.builtin.shell: "docker ps -q | wc -l"
     register: docker_container_count
     become: true
+    changed_when: false
 
   - name: Gather information about all running containers
     ansible.builtin.shell: |
