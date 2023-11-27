@@ -109,14 +109,12 @@
     ansible.builtin.debug:
       msg: "{{ ansible_date_time.time }}" # "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
-  - name: vm update 
-    scale_computing.hypercore.vm_info:
+  - name: vm update description
+    scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
-    register: vm_info
+      description: "{{ docker_ps.stdout_lines }}"
 
-  - name: output vm_info variable
-    debug:
-      var: vm_info.records[0].description
+
 
 
 
