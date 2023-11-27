@@ -84,7 +84,7 @@
 
   - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
-      file: deploy_edgesecurity.yml    
+      file: deploy_edgesecurity_container.yml    
 
   - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
