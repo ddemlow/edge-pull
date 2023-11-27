@@ -90,6 +90,10 @@
     ansible.builtin.include_tasks:
       file: portainer-agent.yaml
 
+  - name: check cluster connection 
+    scale_computing.hypercore.cluster_info:
+    register: cluster_info
+
   post_tasks:
   - name: Gather information about all running containers
     ansible.builtin.command:  "docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Ports{{ '}}' }}'" # docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
