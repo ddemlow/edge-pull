@@ -110,8 +110,9 @@
       msg: "{{ ansible_date_time.time }}" # "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
   - name: check cluster connection 
-    scale_computing.hypercore.cluster_info:
-    register: cluster_info
+    scale_computing.hypercore.vm_info:
+      vmname: "{{ inventory_hostname }}"
+    register: vm_info
 
 
 
