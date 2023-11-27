@@ -97,6 +97,10 @@
   #   register: docker_ps
   #   become: true
   #   changed_when: false
+  - name: Count running Docker containers
+    ansible.builtin.shell: "docker ps -q | wc -l"
+    register: docker_container_count
+    become: true
 
   - name: Gather information about all running containers
     ansible.builtin.shell: |
@@ -107,17 +111,17 @@
 
   - name: Print Docker container list (running)
     ansible.builtin.debug:
-      var: docker_ps.stdout_lines
+      msg: "Container count: {{ docker_container_count }} List: {{ docker_ps.stdout_lines }}""
 
 #TODO - could update tags on runner VM - based on UUID to include container__{{name}}
 # every runner should have env variables with credentials for the cluster it's on ... and host uuid should be the VM uuid 
 
   - name: Last update time (UTC)
     ansible.builtin.debug:
-      msg: "{{ ansible_date_time.time }}" # "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+      msg: "{{ ansible_date_time.time }}" 
 
   - name: vm update description with timestamp, container count and list 
     scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
-      description: "#{{ docker_ps.stdout_lines | length }}@{{ ansible_date_time.time }} {{ docker_ps.stdout_lines }}"
+      description: "#{{ docker_container_count }}@{{ ansible_date_time.time }} {{ docker_ps.stdout_lines }}"
     changed_when: false
