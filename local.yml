@@ -105,7 +105,6 @@
     become: true
     changed_when: false
 
-
   - name: Print Docker container list (running)
     ansible.builtin.debug:
       var: docker_ps.stdout_lines
@@ -121,9 +120,4 @@
     scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
       description: "{{ docker_ps.stdout_lines }}"
-
-
-
-
-
-
+    changed_when: false
