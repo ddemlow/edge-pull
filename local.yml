@@ -111,7 +111,7 @@
 
   - name: vm update 
     scale_computing.hypercore.vm_info:
-      vm_name: "{{ inventory_hostname }}"
+      vm_name: "{{ ansible_hostname }}"
     register: vm_info
 
   - name: output vm_info variable
