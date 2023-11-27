@@ -6,6 +6,7 @@
       description: VM created via ansible-pull by "{{ ansible_hostname }}" # update "{{ ansible_date_time.iso8601 }}" 
       state: present
       tags:
+        - demo
         - ansible-pull
       memory: "{{ '1GB' | human_to_bytes }}"
       vcpu: 2
