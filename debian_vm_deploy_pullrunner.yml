@@ -184,7 +184,7 @@
           - "{{ site_name }}"
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
-          - "ansible_user__password"
+#          - "ansible_user__password"
           - SERIAL #debian will panic on first boot without this 
         vcpu: 4
         power_state: start
