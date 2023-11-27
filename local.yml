@@ -7,7 +7,7 @@
   - media_library
   - netboot_vm
   vars:
-    demo_state: present #absent # or present 
+    demo_state: absent #absent # or present 
     # vmname: pull-tinycore
     # image_path: /tmp
     # image_url:
