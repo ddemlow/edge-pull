@@ -93,7 +93,7 @@
 
   post_tasks:
   - name: Gather information about all running containers
-    ansible.builtin.command:  "docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Ports{{ '}}' }}'" # docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+    ansible.builtin.command: "docker ps --format '{{.Names}}: {{.Ports}}' | awk '{printf "%s, ", $0}' | sed 's/, $/\n/'" #"docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Ports{{ '}}' }}'" # docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
     register: docker_ps
     become: true
     changed_when: false
