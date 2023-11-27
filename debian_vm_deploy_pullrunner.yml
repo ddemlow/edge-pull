@@ -181,7 +181,6 @@
         description: debian 11 - user=debian - password=password - - SERIAL
         tags:
           - demo
-          - ansible
           - "{{ site_name }}"
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
