@@ -119,5 +119,5 @@
   - name: vm update description
     scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
-      description: "{{ docker_ps.stdout_lines }} - updated: {{ ansible_date_time.time }}"" 
+      description: "{{ docker_ps.stdout_lines }} - updated: {{ ansible_date_time.time }}"
     changed_when: false
