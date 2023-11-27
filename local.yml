@@ -111,14 +111,14 @@
 
   - name: Print Docker container list (running)
     ansible.builtin.debug:
-      msg: "Container count: {{ docker_container_count.stdout }} List: {{ docker_ps.stdout_lines }}"
+      msg: "Container count: {{ docker_container_count.stdout }} List: {{ docker_ps.stdout_lines }} at {{ ansible_date_time.time }}"" 
 
 #TODO - could update tags on runner VM - based on UUID to include container__{{name}}
 # every runner should have env variables with credentials for the cluster it's on ... and host uuid should be the VM uuid 
 
-  - name: Last update time (UTC)
-    ansible.builtin.debug:
-      msg: "{{ ansible_date_time.time }}" 
+  # - name: Last update time (UTC)
+  #   ansible.builtin.debug:
+  #     msg: "{{ ansible_date_time.time }}" 
 
   - name: vm update description with timestamp, container count and list 
     scale_computing.hypercore.vm_params:
