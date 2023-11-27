@@ -123,5 +123,5 @@
   - name: vm update description with timestamp, container count and list 
     scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
-      description: "#{{ docker_container_count }}@{{ ansible_date_time.time }} {{ docker_ps.stdout_lines }}"
+      description: "#{{ docker_container_count }} @ {{ ansible_date_time.time }} {{ docker_ps.stdout_lines }}"
     changed_when: false
