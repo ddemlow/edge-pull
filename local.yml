@@ -116,7 +116,7 @@
 
   - name: output vm_info variable
     debug:
-      var: vm_info
+      var: vm_info.records.description
 
 
 
