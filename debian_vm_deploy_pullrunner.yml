@@ -185,9 +185,19 @@
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
           - "repo__{{ repo_url }}"
-#          - "ansible_user__password"
           - SERIAL #debian will panic on first boot without this 
         vcpu: 4
         power_state: start
+
+    - name: Remove SERIAL tag after first start - Vm desired configuration and state for "{{ vmname }}"
+      scale_computing.hypercore.vm_params:
+        vm_name: "{{vmname}}"
+        tags:
+          - demo
+          - "{{ site_name }}"
+          - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
+          - "ansible_user__debian"
+          - "repo__{{ repo_url }}"
+        power_state: start        
 
 #TODO - could extend this to connect directly into runner for "push" updates - could also have runners check/config themselves via pull
