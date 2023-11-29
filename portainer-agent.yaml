@@ -18,7 +18,6 @@
           EDGE_ID: "{{ portainer_edge_id }}"
           EDGE_KEY: "aHR0cHM6Ly8yMC44OC4yMi4yMjc6OTQ0M3wyMC44OC4yMi4yMjc6ODAwMHwydXByOUtuYTd6ZHBNWExNMm9meDNubHZEOHh2THpLVjN5WnlXM1lsWFdvPXww"
           EDGE_INSECURE_POLL: "1"
-          EDGE_ASYNC: "1"
           PORTAINER_GROUP: "3"
           PORTAINER_TAGS: "9"
       become: yes
