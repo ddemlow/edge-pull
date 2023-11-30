@@ -8,6 +8,7 @@
       community.docker.docker_container:
         name: portainer_edge_agent
         state: absent
+      become: yes
 
     - name: Run Portainer Edge Agent Container
       community.docker.docker_container:
