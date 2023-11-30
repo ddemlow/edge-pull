@@ -1,6 +1,13 @@
+
+
     - name: Set Portainer Edge ID to Hostname
       ansible.builtin.set_fact:
         portainer_edge_id: "{{ ansible_hostname }}"
+
+    - name: Stop Portainer Edge Agent container
+      community.docker.docker_container:
+        name: portainer_edge_agent
+        state: absent
 
     - name: Run Portainer Edge Agent Container
       community.docker.docker_container:
@@ -21,3 +28,6 @@
           PORTAINER_GROUP: "3"
           PORTAINER_TAGS: "9"
       become: yes
+
+
+
