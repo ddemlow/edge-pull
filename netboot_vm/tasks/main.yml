@@ -10,7 +10,7 @@
         - ansible-pull
       memory: "{{ '1GB' | human_to_bytes }}"
       vcpu: 2
-      power_state: stopped 
+      power_state: stop  #start or stop
       force_reboot: true
       disks:
         - type: ide_cdrom
