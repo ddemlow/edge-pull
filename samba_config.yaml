@@ -1,4 +1,4 @@
-# could include this playbook in local.yaml for fleet automatic deployment / config
+# DRAFT - could include this playbook in local.yaml for fleet automatic deployment / config
 # requires ansible-galaxy collection install vladgh.samba
 ---
 - name: Samba Server for pullrunner deployment
