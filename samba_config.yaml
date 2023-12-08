@@ -29,7 +29,6 @@
       - result.rc != 0
       - '"already installed" not in result.stdout'
     changed_when: '"installed" in result.stdout'
-    tags:
 
   - name: Include Samba Server role
     ansible.builtin.include_role:
