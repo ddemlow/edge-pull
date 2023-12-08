@@ -30,6 +30,15 @@
       - '"already installed" not in result.stdout'
     changed_when: '"installed" in result.stdout'
 
+  - name: create user
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      password: "{{ item.password }}"
+      shell: /bin/bash
+      append: true
+      state: present
+    loop: "{{ samba_users }}"
+  
   - name: Include Samba Server role
     ansible.builtin.include_role:
-      name: vladgh.samba.server
+      name: vladgh.samba.servepr
