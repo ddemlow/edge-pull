@@ -1,0 +1,36 @@
+---
+# could include this playbook in local.yaml for fleet automatic deployment / config
+# requires ansible-galaxy collection install vladgh.samba
+- name: Samba Server for pullrunner deployment
+  hosts: localhost
+  become: true
+  vars:
+    samba_shares:
+      - name: images
+        guest_ok: yes
+        path: /srv/shares/images/
+        public: yes
+        writeable: yes
+        write_list: user,ubuntu, guest
+        comment: 'share on pull runner'
+    samba_guest_account: ubuntu
+    samba_users:
+    - name: user
+      password: Scale2010
+    - name: ubuntu
+      password: Scale2010
+
+  tasks:
+    - name: Install the samba collection
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install vladgh.samba
+      register: result
+      failed_when:
+        - result.rc != 0
+        - '"already installed" not in result.stdout'
+      changed_when: '"installed" in result.stdout'
+      tags:
+
+    - name: Include Samba Server role
+      ansible.builtin.include_role:
+        name: vladgh.samba.server
