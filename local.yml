@@ -48,6 +48,7 @@
           db_data: {}
       state: "{{ demo_state }}"
     become: yes
+    register: wordpress_result
 
   - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
     community.docker.docker_compose:
@@ -55,6 +56,7 @@
       state: "{{ demo_state }}"
     become: true
     ignore_errors: true
+    register: gitea_result
 
   # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
   #   community.docker.docker_compose:
@@ -75,22 +77,29 @@
         PGADMIN_DEFAULT_EMAIL: "admin@example.com"
         PGADMIN_DEFAULT_PASSWORD: "admin"
     become: yes    
+    register: pgadmin4_result
 
   - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
-      file: deploy_edgesecurity_container.yml    
+      file: deploy_edgesecurity_container.yml
+    register: edgesecurity_result    
 
   - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
       file: portainer-agent.yaml
-
+    register: portainer_result
 
   post_tasks:
-  # - name: Gather information about all running containers
-  #   ansible.builtin.command:  "docker ps --format '{{.Names}}: {{.Ports}}' | awk '{printf "%s, ", $0}' | sed 's/, $/\n/'"  # "docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Ports{{ '}}' }}'" # docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
-  #   register: docker_ps
-  #   become: true
-  #   changed_when: false
+  - name: Set flag if any task has changed
+    ansible.builtin.set_fact:
+      any_change: "{{ wordpress_result.changed or gitea_result.changed or pgadmin4_result.changed or edgesecurity_result.changed or portainer_result.changed }}"
+    when:
+      - wordpress_result is defined
+      - gitea_result is defined
+      - pgadmin4_result is defined
+      - edgesecurity_result is defined
+      - portainer_result is defined
+
   - name: Count running Docker containers
     ansible.builtin.shell: "docker ps -q | wc -l"
     register: docker_container_count
@@ -120,3 +129,4 @@
       vm_name: "{{ ansible_hostname }}"
       description: "Up:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }} {{ docker_ps.stdout_lines }}"
     changed_when: false
+    when: any_change | default(false)
