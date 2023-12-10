@@ -29,6 +29,7 @@
           PORTAINER_GROUP: "3"
           PORTAINER_TAGS: "9"
       become: yes
+      register: portainer_result
 
 
     - name: Run second Portainer Edge Agent Container (DO)
@@ -50,6 +51,6 @@
           PORTAINER_GROUP: "3"
           PORTAINER_TAGS: "9"
       become: yes
-
+      register: portainer2_result
 
 

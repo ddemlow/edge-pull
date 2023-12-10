@@ -87,18 +87,19 @@
   - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
       file: portainer-agent.yaml
-    register: portainer_result
+#    register: portainer_result
 
   post_tasks:
   - name: Set flag if any task has changed
     ansible.builtin.set_fact:
-      any_change: "{{ wordpress_result.changed or gitea_result.changed or pgadmin4_result.changed or edgesecurity_result.changed or portainer_result.changed }}"
+      any_change: "{{ wordpress_result.changed or gitea_result.changed or pgadmin4_result.changed or edgesecurity_result.changed or portainer_result.changed or portainer2_result.changed }}"
     when:
       - wordpress_result is defined
       - gitea_result is defined
       - pgadmin4_result is defined
       - edgesecurity_result is defined
       - portainer_result is defined
+      - portainer2_result is defined
 
   - name: Count running Docker containers
     ansible.builtin.shell: "docker ps -q | wc -l"
