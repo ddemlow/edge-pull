@@ -31,4 +31,25 @@
       become: yes
 
 
+    - name: Run second Portainer Edge Agent Container (DO)
+      community.docker.docker_container:
+        name: portainer_edge_agent_do
+        image: portainer/agent:2.19.3
+        state: started
+        restart_policy: always
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /var/lib/docker/volumes:/var/lib/docker/volumes
+          - /:/host
+          - portainer_agent_data:2/data
+        env:
+          EDGE: "1"
+          EDGE_ID: "{{ portainer_edge_id }}"
+          EDGE_KEY: "aHR0cHM6Ly8xNjUuMjI3Ljk3LjE2OTo5NDQzfDE2NS4yMjcuOTcuMTY5OjgwMDB8Q3FXY0hLM1ZEbmQzd2FNalRuV3BWMUdyMmJ5Y1dUa3h5MHFMTk1qcjlvND18MA"
+          EDGE_INSECURE_POLL: "1"
+          PORTAINER_GROUP: "3"
+          PORTAINER_TAGS: "9"
+      become: yes
+
+
 
