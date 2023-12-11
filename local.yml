@@ -130,4 +130,4 @@
       vm_name: "{{ ansible_hostname }}"
       description: "Up:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }} {{ docker_ps.stdout_lines }}"
     changed_when: false
-    when: any_change | default(false)
+    when: any_change | default(false) or ansible_date_time.minute < 5
