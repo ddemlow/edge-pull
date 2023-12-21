@@ -109,7 +109,8 @@
 
   - name: Gather information about all running containers
     ansible.builtin.shell: |
-      docker ps --format '{{ "{{" }}.Names{{ "}}" }}: {{ "{{" }}.Ports{{ "}}" }}' | awk '{printf "%s, ", $$0}' | sed 's/, $$//'
+      docker ps --format '{{ "{{" }}.Names{{ "}}" }}: {{ "{{" }}.Ports{{ "}}" }}' | awk '{print $$0}'
+      #docker ps --format '{{ "{{" }}.Names{{ "}}" }}: {{ "{{" }}.Ports{{ "}}" }}' | awk '{printf "%s, ", $$0}' | sed 's/, $$//'
     register: docker_ps
     become: true
     changed_when: false
@@ -128,6 +129,6 @@
   - name: vm update description with timestamp, container count and list 
     scale_computing.hypercore.vm_params:
       vm_name: "{{ ansible_hostname }}"
-      description: "Up:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}GMT {{ docker_ps.stdout_lines }}"
+      description: "Count:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}GMT {{ docker_ps.stdout_lines }}"
     changed_when: false
     when: any_change | default(false) or ansible_date_time.minute | int < 5
