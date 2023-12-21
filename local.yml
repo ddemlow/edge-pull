@@ -115,6 +115,10 @@
     become: true
     changed_when: false
 
+  - name: debig output docker_ps
+    ansible.builtin.debug:
+      var: "{{ docker_ps }}"
+  
   - name: Print Docker container list (running)
     ansible.builtin.debug:
       msg: "Container count: {{ docker_container_count.stdout }} List: {{ docker_ps.stdout_lines }} at {{ ansible_date_time.time }}"
