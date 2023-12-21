@@ -119,9 +119,9 @@
     ansible.builtin.debug:
       var: "{{ docker_ps }}"
   
-  - name: Print Docker container list (running)
-    ansible.builtin.debug:
-      msg: "Container count: {{ docker_container_count.stdout }} List: {{ docker_ps.stdout_lines }} at {{ ansible_date_time.time }}"
+  # - name: Print Docker container list (running)
+  #   ansible.builtin.debug:
+  #     msg: "Container count: {{ docker_container_count.stdout }} List: {{ docker_ps.stdout_lines }} at {{ ansible_date_time.time }}"
 
 #TODO - could update tags on runner VM - based on UUID to include container__{{name}}
 # every runner should have env variables with credentials for the cluster it's on ... and host uuid should be the VM uuid 
@@ -135,4 +135,4 @@
       vm_name: "{{ ansible_hostname }}"
       description: "Count:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}GMT {{ docker_ps.stdout_lines }}"
     changed_when: false
-#    when: any_change | default(false) or ansible_date_time.minute | int < 5
+    when: any_change | default(false) or ansible_date_time.minute | int < 5
