@@ -114,10 +114,6 @@
     register: docker_ps
     become: true
     changed_when: false
-
-  - name: debig output docker_ps
-    ansible.builtin.debug:
-      var: "{{ docker_ps }}"
   
   # - name: Print Docker container list (running)
   #   ansible.builtin.debug:
