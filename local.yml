@@ -3,9 +3,9 @@
 # inside "runner" vm deploys simple docker container plus a docker compose configuration
 # TODO - some locking to see if previous ansible pull is done 
   hosts: localhost
-  # roles:
-  # - media_library
-  # - netboot_vm
+  roles:
+  - media_library
+  - netboot_vm
   vars:
     demo_state: absent # absent or present 
   environment:  # if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
@@ -79,10 +79,10 @@
     become: yes    
     register: pgadmin4_result
 
-  # - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
-  #   ansible.builtin.include_tasks:
-  #     file: deploy_edgesecurity_container.yml
-  #   register: edgesecurity_result    
+  - name: include playbook deploy_edgesecurity.yml #include file should have only tasks - not full playbook
+    ansible.builtin.include_tasks:
+      file: deploy_edgesecurity_container.yml
+    register: edgesecurity_result    
 
   - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
