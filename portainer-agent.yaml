@@ -4,32 +4,32 @@
       ansible.builtin.set_fact:
         portainer_edge_id: "{{ ansible_hostname }}"
 
-    # - name: Stop Portainer Edge Agent container
-    #   community.docker.docker_container:
-    #     name: portainer_edge_agent
-    #     state: absent
-    #   become: yes
-
-    - name: Run Portainer Edge Agent Container
+    - name: Stop AZ Portainer Edge Agent container (azure portainer instance was stopped)
       community.docker.docker_container:
         name: portainer_edge_agent
-        image: portainer/agent:2.19.3
-        state: started
-        restart_policy: always
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /var/lib/docker/volumes:/var/lib/docker/volumes
-          - /:/host
-          - portainer_agent_data:/data
-        env:
-          EDGE: "1"
-          EDGE_ID: "{{ portainer_edge_id }}"
-          EDGE_KEY: "aHR0cHM6Ly8yMC44OC4yMi4yMjc6OTQ0M3wyMC44OC4yMi4yMjc6ODAwMHwydXByOUtuYTd6ZHBNWExNMm9meDNubHZEOHh2THpLVjN5WnlXM1lsWFdvPXww"
-          EDGE_INSECURE_POLL: "1"
-          PORTAINER_GROUP: "3"
-          PORTAINER_TAGS: "9"
+        state: absent
       become: yes
-      register: portainer_result
+
+    # - name: Remove AZ Portainer Edge Agent Container
+    #   community.docker.docker_container:
+    #     name: portainer_edge_agent
+    #     image: portainer/agent:2.19.3
+    #     state: absent
+    #     restart_policy: always
+    #     volumes:
+    #       - /var/run/docker.sock:/var/run/docker.sock
+    #       - /var/lib/docker/volumes:/var/lib/docker/volumes
+    #       - /:/host
+    #       - portainer_agent_data:/data
+    #     env:
+    #       EDGE: "1"
+    #       EDGE_ID: "{{ portainer_edge_id }}"
+    #       EDGE_KEY: "aHR0cHM6Ly8yMC44OC4yMi4yMjc6OTQ0M3wyMC44OC4yMi4yMjc6ODAwMHwydXByOUtuYTd6ZHBNWExNMm9meDNubHZEOHh2THpLVjN5WnlXM1lsWFdvPXww"
+    #       EDGE_INSECURE_POLL: "1"
+    #       PORTAINER_GROUP: "3"
+    #       PORTAINER_TAGS: "9"
+    #   become: yes
+    #   register: portainer_result
 
 
     - name: Run second Portainer Edge Agent Container (DO)
