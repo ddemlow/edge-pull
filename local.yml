@@ -101,6 +101,10 @@
       - portainer_result is defined
       - portainer2_result is defined
 
+  - name: output any_change
+    ansible.builtin.debug:
+      var: any_change
+
   - name: Count running Docker containers`
     ansible.builtin.shell: "docker ps -q | wc -l"
     register: docker_container_count
