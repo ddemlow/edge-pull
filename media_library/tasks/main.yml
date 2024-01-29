@@ -1,26 +1,28 @@
 ---
-#   - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
-#     ansible.builtin.get_url:
-#       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
-#       dest: /tmp/TinyCore-vm-integration.iso
-#       force: false
-#     become: true
-#     ignore_errors: true
-# #    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
-
-#   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
-#     scale_computing.hypercore.iso:
-#       name: "TinyCore-current.iso"
-#       source: "/tmp/TinyCore-vm-integration.iso"
-#       state: present
-#     register: result
-
   - name: Upload ISO image netboot.xyz.iso from repo clone to HyperCore API #this file is part of repo - note path for git clone
     scale_computing.hypercore.iso:
       name: "netboot.xyz.iso"
       source: "/root/.ansible/pull/{{ ansible_hostname }}/netboot.xyz.iso"
       state: present
     register: result
+
+  - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
+    ansible.builtin.get_url:
+      url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
+      dest: /tmp/TinyCore-vm-integration.iso
+      force: false
+    become: true
+    ignore_errors: true
+#    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
+
+  - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
+    scale_computing.hypercore.iso:
+      name: "TinyCore-current.iso"
+      source: "/tmp/TinyCore-vm-integration.iso"
+      state: present
+    register: result
+
+
 
   # - name: Download Virtual Disks from URL list
   #   ansible.builtin.get_url:
