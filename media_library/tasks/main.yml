@@ -6,14 +6,28 @@
       state: present
     register: result
 
-  - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
+
+  - name: Check if TinyCore ISO already exists
+    ansible.builtin.stat:
+      path: /tmp/TinyCore-vm-integration.iso
+    register: iso_stat
+
+  - name: Download TinyCore ISO image
     ansible.builtin.get_url:
       url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
       dest: /tmp/TinyCore-vm-integration.iso
       force: false
-    become: true
-    ignore_errors: true
-#    when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
+    when: not iso_stat.stat.exists
+    ignore_errors: true    
+
+  # - name: download iso image from http://tinycorelinux.net/13.x/x86/release/tinycore-current.iso and save it into /tmp/tinycore-vm-integration.iso
+  #   ansible.builtin.get_url:
+  #     url: http://tinycorelinux.net/13.x/x86/release/TinyCore-current.iso
+  #     dest: /tmp/TinyCore-vm-integration.iso
+  #     force: false
+  #   become: true
+  #   ignore_errors: true
+  #   when: "not (ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso') is defined and ansible.builtin.stat('/tmp/TinyCore-vm-integration.iso').stat.exists)"
 
   - name: Upload ISO image TinyCore-vm-integration.iso to HyperCore API
     scale_computing.hypercore.iso:
