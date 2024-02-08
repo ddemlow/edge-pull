@@ -129,8 +129,17 @@
                 - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDihWWhjoPj8KVLtdLDwNJQ71zi9An0iUFjefRWu2Eju ddemlow@scalecomputing.com
                 - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTiBEMhRymL0yqDAGF33DVwzfqp2CcyKJOOq5A862ocnOKRVhKoaU6ZfXnyLanqbylMKut5kuCRfq51nR7eBGpM6V0IUe5wlgvRB1HtXJHDBedclRaPWa8XQikk8AOscbmGufcs10TEFDH45L4tJd3ym+VD8mKp7PIge6yvhxaQaPfGx3MafEPm/ISpDLxbNueTIHBUt3WE7lfPXZ3owHIaEEht3L7hXvEqG801x/snT7Y1NJwfEpfD2EClDwoHHdln+UzJyxsbGZgmCgTVmXvnaz833lb2pEvmzfRZQybuXMtFB4/q8evc0CfIhqIcRaLzdImxgV
             disable_root: false # allow ssh root login
-            packages: [docker, docker-compose, qemu-guest-agent, software-properties-common ] 
+            package_upgrade: true
+            packages: [docker, docker-compose, qemu-guest-agent, software-properties-common, apt-transport-https, ca-certificates, curl] 
             runcmd:
+              # Add Docker’s official GPG key
+              - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+              # Add Docker repository
+              - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              # Update the package index
+              - apt-get update
+              # Install Docker Engine
+              - apt-get install -y docker-ce docker-ce-cli containerd.io
               - add-apt-repository -y ppa:ansible/ansible
               - apt-get update
               - apt-get install -y ansible

@@ -6,7 +6,7 @@
       state: present
     register: result
 
-
+# get_url with force: false still makes outbound network connection which is not desirable - so skipping task if file exists at all
   - name: Check if TinyCore ISO already exists
     ansible.builtin.stat:
       path: /tmp/TinyCore-vm-integration.iso
@@ -35,8 +35,6 @@
       source: "/tmp/TinyCore-vm-integration.iso"
       state: present
     register: result
-
-
 
   # - name: Download Virtual Disks from URL list
   #   ansible.builtin.get_url:
