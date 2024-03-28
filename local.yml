@@ -3,11 +3,11 @@
 # inside "runner" vm deploys simple docker container plus a docker compose configuration
 # TODO - some locking to see if previous ansible pull is done 
   hosts: localhost
-  # roles:
+  # roles: # these result in api calls / logins to every cluster at cron interval - 5 min 
   # - media_library
-  # - netboot_vm
+  # - netboot_vm 
   vars:
-    demo_state: absent # absent or present 
+    demo_state: present # absent or present 
   environment:  # if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_TIMEOUT: 2000000
     ANSIBLE_DEPRECATION_WARNINGS: false
