@@ -20,7 +20,7 @@
         image: "falcosecurity/falco-driver-loader:0.36.2" 
         command: "module"
         state: started
-        restart_policy: never
+        restart_policy: no
         auto_remove: true
         tty: true
         interactive: true
