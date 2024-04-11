@@ -12,6 +12,27 @@
 # #      failed_when: running_container.containers[0].Image is undefined
 #      become: yes
 
+#falco driver install
+
+    - name: Run Falco driver loader container
+      community.general.docker_container:
+        name: falco-driver-loader
+        image: "falcosecurity/falco-driver-loader:{{ falco_version }}"
+        command: "{{ driver_options }}"
+        state: started
+        restart_policy: never
+        auto_remove: true
+        tty: true
+        interactive: true
+        privileged: yes
+        volumes:
+          - "/root/.falco:/root/.falco"
+          - "/proc:/host/proc:ro"
+          - "/boot:/host/boot:ro"
+          - "/lib/modules:/host/lib/modules:ro"
+          - "/usr:/host/usr:ro"
+          - "/etc:/host/etc:ro"
+
     - name: Pull AI Sensor Docker image
       docker_image:
         name: 'registry.edgelabs.ai/ai-sensor/ai-sensor'
@@ -68,4 +89,7 @@
 # docker pull registry.edgelabs.ai/ai-sensor/ai-sensor:latest 
 # or 
 # docker pull registry.edgelabs.ai/ai-sensor/ai-sensor-arm:latest (for arm64) docker pull registry.edgelabs.ai/ai-sensor/ai-sensor-arm:latest (for multiplatform) 
-# docker run … (from step 4 depending arch) 
+# docker run … (from step 4 depending arch)
+
+# new update script 
+# sudo curl -O https://static.edgelabs.ai/agent-install.sh && bash agent-install.sh -a 'id1756317079|IWz602oCKaOuwBlhwEo8' -u 'robot-edgelabs-clients' -p 'LWb7bsa9msWphOy8brbXu6XJUlzXhfSV'
