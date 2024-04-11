@@ -59,6 +59,20 @@
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
       become: yes
 
+    - name: Check Falco kernel module status
+      community.general.modprobe:
+        name: falco
+        state: present
+      register: falco_module
+      check_mode: true
+
+    - name: Assert Falco kernel module is loaded
+      assert:
+        that:
+          - falco_module.found == true
+        fail_msg: "Falco kernel module is not loaded."
+        success_msg: "Falco kernel module is loaded."
+
     # - name: Recreate container with new image
     #   community.docker.docker_container:
     #     name: "ai-sensor"
