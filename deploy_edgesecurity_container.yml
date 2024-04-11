@@ -18,7 +18,7 @@
       community.general.docker_container:
         name: falco-driver-loader
         image: "falcosecurity/falco-driver-loader:0.36.2" 
-        command: "{{ driver_options }}"
+        command: "module"
         state: started
         restart_policy: never
         auto_remove: true
