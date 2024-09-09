@@ -14,6 +14,7 @@
   connection: ansible.builtin.local
   gather_facts: True
 
+tasks:
 
   - name: Count running Docker containers`
     ansible.builtin.shell: "docker ps -q | wc -l"

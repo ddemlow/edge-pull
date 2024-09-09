@@ -1,0 +1,44 @@
+#TODO - configure parameters to deploy and manage HyperCore Managed Docker Container Runtime
+---
+- hosts: all
+
+  vars:
+    repo_url: https://github.com/ddemlow/edge-pull.git
+    vmname: "{{ site_name }}-pullrunner" # generally would use site_name pattern from inventory for fleet deployment
+    hostname: "{{ vmname }}"
+    ansible_ssh_private_key_file: ~/.ssh/github.pub
+    remote_rtuser: hcrt_admin
+    remote_rtpassword: "password" #guest password 
+    _minute_: "*/05"
+    _hour_: 0
+    logfile: /tmp/ansible-pull.log
+    image_url: 
+      - "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+    runner_config:
+      memory: "{{ '4 GB' | human_to_bytes }}"
+      description: debian 11 - user=debian - password=password - - SERIAL
+      tags:
+        - "{{ site_name }}"
+        - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
+        - "ansible_user__debian"
+        - "repo__{{ repo_url }}"
+        - SERIAL #debian will panic on first boot without this 
+      vcpu: 4
+      vm_name: "{{ image_name }}"
+      description: "{{ image_url[0] }} template "
+      disks:
+        - disk_slot: 1
+          type: virtio_disk
+          size: "{{ '300 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
+      nics:
+        - vlan: 0
+          type: virtio
+      operating_system:  os_other
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys: # Add your ssh public key for publickey authentication
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDihWWhjoPj8KVLtdLDwNJQ71zi9An0iUFjefRWu2Eju ddemlow@scalecomputing.com
+          - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTiBEMhRymL0yqDAGF33DVwzfqp2CcyKJOOq5A862ocnOKRVhKoaU6ZfXnyLanqbylMKut5kuCRfq51nR7eBGpM6V0IUe5wlgvRB1HtXJHDBedclRaPWa8XQikk8AOscbmGufcs10TEFDH45L4tJd3ym+VD8mKp7PIge6yvhxaQaPfGx3MafEPm/ISpDLxbNueTIHBUt3WE7lfPXZ3owHIaEEht3L7hXvEqG801x/snT7Y1NJwfEpfD2EClDwoHHdln+UzJyxsbGZgmCgTVmXvnaz833lb2pEvmzfRZQybuXMtFB4/q8evc0CfIhqIcRaLzdImxgV
+      disable_root: false # allow ssh root login
+
+

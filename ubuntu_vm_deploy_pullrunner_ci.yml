@@ -78,8 +78,6 @@
         disks:
           - type: ide_cdrom
             disk_slot: 0
-          - type: nvram
-            disk_slot: 0
         nics:
           - vlan: 0
             type: virtio
@@ -99,14 +97,14 @@
           disable_snapshotting: false
       register: diskattached
 
-    # - name: Disk desired configuration for "{{ image_name }}"   # seems resizing disk before first boot causes panic on debian11 bulseye unless serial port exists - add SERIAL to tag or description
-    #   scale_computing.hypercore.vm_disk:
-    #     vm_name: "{{ image_name }}"
-    #     items:
-    #       - disk_slot: 1
-    #         type: virtio_disk
-    #         size: "{{ '300 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
-    #     state: present
+    - name: Disk desired configuration for "{{ image_name }}"   # seems resizing disk before first boot causes panic on debian11 bulseye unless serial port exists - add SERIAL to tag or description
+      scale_computing.hypercore.vm_disk:
+        vm_name: "{{ image_name }}"
+        items:
+          - disk_slot: 1
+            type: virtio_disk
+            size: "{{ '300 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
+        state: present
 
     - name: Set attached vsd device as bootable
       scale_computing.hypercore.vm_boot_devices:
@@ -116,6 +114,14 @@
             disk_slot: 1
         state: present
       register: bootable
+
+    - name: clean up errant NVRAM disk 
+      scale_computing.hypercore.vm_disk:
+        vm_name: "{{ image_name }}"
+        items:
+          - disk_slot: 0
+            type: nvram
+        state: absent
 
 # template complete! ... I guess here I don't need to create a template and clone it - TODO?
 
@@ -202,19 +208,19 @@
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
           - "repo__{{ repo_url }}"
-          - SERIAL #debian will panic on first boot without this 
+          - SERIAL 
         vcpu: 4
         power_state: start
 
     - name: Remove SERIAL tag after first start - Vm desired configuration and state for "{{ vmname }}"
       scale_computing.hypercore.vm_params:
-        vm_name: "{{vmname}}"
+        vm_name: "{{ vmname }}"
         tags:
           - demo
           - "{{ site_name }}"
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
           - "repo__{{ repo_url }}"
-        power_state: start        
+        power_state: start
 
-#TODO - could extend this to connect directly into runner for "push" updates - could also have runners check/config themselves via pull
+# TODO - could extend this to connect directly into runner for "push" updates - could also have runners check/config themselves via pull

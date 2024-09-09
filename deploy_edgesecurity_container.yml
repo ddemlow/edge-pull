@@ -50,7 +50,7 @@
       docker_container:
         name: 'ai-sensor'
         image: 'registry.edgelabs.ai/ai-sensor/ai-sensor:latest'
-        state: started
+        state: stopped
         restart_policy: always
         network_mode: 'host'
         capabilities:
@@ -59,11 +59,11 @@
           API_KEY: 'id1756317079|IWz602oCKaOuwBlhwEo8'
       become: yes
 
-    - name: Check Falco kernel module status
-      community.general.modprobe:
-        name: falco
-        state: present
-      register: falco_module
+    # - name: Check Falco kernel module status
+    #   community.general.modprobe:
+    #     name: falco
+    #     state: present
+    #   register: falco_module
  #     check_mode: true
 
     # - name: Assert Falco kernel module is loaded
