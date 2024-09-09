@@ -6,7 +6,7 @@
   # - media_library
   # - netboot_vm
   vars:
-    demo_state: present  # absent or present
+    demo_state: absent #present  # absent or present
   environment:  # if set here - hypercore modules will automatically use this for each remote cluster - avoiding need to specify cluster_instance for each test
     SC_TIMEOUT: 2000000
     ANSIBLE_DEPRECATION_WARNINGS: false
@@ -89,16 +89,27 @@
 #    register: portainer_result
 
   post_tasks:
+
   - name: Set flag if any task has changed
     ansible.builtin.set_fact:
-      any_change: "{{ (wordpress_result is defined and wordpress_result.changed) or (gitea_result is defined and gitea_result.changed) or (pgadmin4_result is defined and pgadmin4_result.changed) or (edgesecurity_result is defined and edgesecurity_result.changed) or (portainer_result is defined and portainer_result.changed) or (portainer2_result is defined and portainer2_result.changed)  }}"
-    # when:
-    #   - wordpress_result is defined
-    #   - gitea_result is defined
-    #   - pgadmin4_result is defined
-    #   - edgesecurity_result is defined
-    #   - portainer_result is defined
-    #   - portainer2_result is defined
+      any_change: >
+        {{ (wordpress_result is defined and wordpress_result.changed) or
+           (gitea_result is defined and gitea_result.changed) or
+           (pgadmin4_result is defined and pgadmin4_result.changed) or
+           (edgesecurity_result is defined and edgesecurity_result.changed) or
+           (portainer_result is defined and portainer_result.changed) }}
+    become: false
+
+  # - name: Set flag if any task has changed
+  #   ansible.builtin.set_fact:
+  #     any_change: "{{ (wordpress_result is defined and wordpress_result.changed) or (gitea_result is defined and gitea_result.changed) or (pgadmin4_result is defined and pgadmin4_result.changed) or (edgesecurity_result is defined and edgesecurity_result.changed) or (portainer_result is defined and portainer_result.changed) or (portainer2_result is defined and portainer2_result.changed)  }}"
+  #   # when:
+  #   #   - wordpress_result is defined
+  #   #   - gitea_result is defined
+  #   #   - pgadmin4_result is defined
+  #   #   - edgesecurity_result is defined
+  #   #   - portainer_result is defined
+  #   #   - portainer2_result is defined
 
   - name: output any_change
     ansible.builtin.debug:
