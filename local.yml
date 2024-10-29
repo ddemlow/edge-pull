@@ -135,3 +135,4 @@
       description: "Count:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}GMT {{ docker_ps.stdout_lines }}"
     changed_when: false
     when: any_change | default(false) or ansible_date_time.minute | int < 5
+    ignore_errors: true
