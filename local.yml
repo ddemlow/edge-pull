@@ -15,9 +15,29 @@
   gather_facts: True
 
   pre_tasks:
+  - name: Check if Docker is installed
+    ansible.builtin.command: which docker
+    register: docker_check
+    ignore_errors: true
+    changed_when: false
+
+  - name: Install Docker using Homebrew
+    ansible.builtin.shell: |
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      brew install docker
+    when: docker_check.rc != 0
+    become: yes
+
+  - name: Install Docker Compose plugin
+    ansible.builtin.shell: |
+      brew install docker-compose
+    become: yes
+    when: docker_check.rc == 0
+
   - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose_v2:
       project_name: wordpress
+      docker_cli: /usr/local/bin/docker
       definition:
         version: '3.3'
         services:
