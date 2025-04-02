@@ -15,6 +15,13 @@
   gather_facts: True
 
   pre_tasks:
+  - name: Remove old Docker collections
+    ansible.builtin.shell: |
+      rm -rf ~/.ansible/collections/ansible_collections/community/docker*
+      rm -rf ~/.ansible/collections/ansible_collections/community.docker*.info
+    ignore_errors: true
+    changed_when: false
+
   - name: Install required collections
     ansible.builtin.shell: |
       ansible-galaxy collection install -r requirements.yml
