@@ -21,10 +21,20 @@
     ignore_errors: true
     changed_when: false
 
+  - name: Install Docker Compose Plugin
+    ansible.builtin.shell: |
+      DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/lib/docker/cli-plugins}
+      sudo mkdir -p $DOCKER_CONFIG
+      sudo curl -SL "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64" -o $DOCKER_CONFIG/docker-compose
+      sudo chmod +x $DOCKER_CONFIG/docker-compose
+    args:
+      creates: /usr/lib/docker/cli-plugins/docker-compose
+    become: yes
+
   - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose_v2:
       project_name: wordpress
-      docker_cli: /usr/local/bin/docker
+      docker_cli: /usr/bin/docker
       definition:
         version: '3.3'
         services:
