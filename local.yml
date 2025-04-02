@@ -18,7 +18,7 @@
   - name: Install required collections
     ansible.builtin.shell: |
       ansible-galaxy collection install -r requirements.yml
-      ansible-galaxy collection install community.docker
+      ansible-galaxy collection install community.docker --force
     register: collection_install
     changed_when: collection_install.rc == 0
     ignore_errors: true
