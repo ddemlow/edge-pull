@@ -69,6 +69,21 @@
           db_data: {}
     become: yes
 
+  - name: Get Docker CLI path with specific locations
+    ansible.builtin.command: "{{ item }}"
+    with_items:
+      - which docker
+      - test -f /usr/bin/docker && echo "/usr/bin/docker"
+      - test -f /usr/local/bin/docker && echo "/usr/local/bin/docker"
+    register: docker_cli_results
+    ignore_errors: yes
+    changed_when: false
+
+  - name: Set Docker CLI path
+    ansible.builtin.set_fact:
+      docker_cli: "{{ (docker_cli_results.results | selectattr('stdout', 'defined') | map(attribute='stdout') | first) }}"
+    ignore_errors: yes
+
   - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose_v2:
       project_name: wordpress
@@ -76,8 +91,10 @@
       files:
         - wordpress-compose.yml
       state: "{{ demo_state }}"
+      docker_cli: "{{ docker_cli | default('/usr/bin/docker') }}"
     become: yes
-    register: wordpress_result 
+    register: wordpress_result
+    ignore_errors: yes
 
   # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
   #   community.docker.docker_compose:
