@@ -21,13 +21,6 @@
     ignore_errors: true
     changed_when: false
 
-  - name: Install Docker using Homebrew
-    ansible.builtin.shell: |
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      brew install docker
-    when: docker_check.rc != 0
-    become: yes
-
   - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose_v2:
       project_name: wordpress
