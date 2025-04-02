@@ -16,7 +16,7 @@
 
   pre_tasks:
   - name: Manage WordPress application using Docker Compose (v2 syntax)
-    community.docker.docker_compose:
+    community.docker.docker_compose_v2:
       project_name: wordpress
       compose:
         version: '3.3'
