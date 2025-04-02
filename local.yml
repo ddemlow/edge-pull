@@ -15,12 +15,11 @@
   gather_facts: True
 
   pre_tasks:
-  - name: Manage wordpress application using Docker Compose values in playbook
+  - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose:
       project_name: wordpress
-      definition:
+      compose:
         version: '3.3'
-
         services:
           db:
             image: mysql:5.7
@@ -31,10 +30,11 @@
               MYSQL_DATABASE: wordpress
               MYSQL_USER: wordpress
               MYSQL_PASSWORD: wordpress
+
           wordpress:
+            image: wordpress:latest
             depends_on:
               - db
-            image: wordpress:latest
             ports:
               - "4080:80"
             environment:
@@ -47,15 +47,7 @@
           db_data: {}
       state: "{{ demo_state }}"
     become: yes
-    register: wordpress_result
-
-  - name: manage gitea application from /gitea/docker-compose.yaml file gitea 
-    community.docker.docker_compose:
-      project_src: gitea
-      state: "{{ demo_state }}"
-    become: true
-    ignore_errors: true
-    register: gitea_result
+    register: wordpress_result 
 
   # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
   #   community.docker.docker_compose:
