@@ -15,39 +15,6 @@
   gather_facts: True
 
   pre_tasks:
-  - name: Remove old Docker collections
-    ansible.builtin.shell: |
-      rm -rf ~/.ansible/collections/ansible_collections/community/docker*
-      rm -rf ~/.ansible/collections/ansible_collections/community.docker*.info
-    ignore_errors: true
-    changed_when: false
-
-  - name: Install required collections
-    ansible.builtin.shell: |
-      ansible-galaxy collection install -r requirements.yml
-      ansible-galaxy collection install community.docker --force
-    register: collection_install
-    changed_when: collection_install.rc == 0
-    ignore_errors: true
-
-  - name: Verify community.docker collection
-    ansible.builtin.shell: ansible-galaxy collection list | grep community.docker
-    register: docker_collection_check
-    changed_when: false
-    failed_when: docker_collection_check.rc != 0
-
-  - name: Check if Docker is installed
-    ansible.builtin.command: which docker
-    register: docker_check
-    ignore_errors: true
-    changed_when: false
-
-  - name: Check Docker Compose version
-    ansible.builtin.shell: docker compose version || docker-compose --version
-    register: compose_version
-    changed_when: false
-    ignore_errors: true
-
   - name: Install Docker Compose Plugin
     ansible.builtin.shell: |
       DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/lib/docker/cli-plugins}
