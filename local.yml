@@ -21,6 +21,12 @@
     ignore_errors: true
     changed_when: false
 
+  - name: Check Docker Compose version
+    ansible.builtin.shell: docker compose version || docker-compose --version
+    register: compose_version
+    changed_when: false
+    ignore_errors: true
+
   - name: Install Docker Compose Plugin
     ansible.builtin.shell: |
       DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/lib/docker/cli-plugins}
@@ -31,11 +37,10 @@
       creates: /usr/lib/docker/cli-plugins/docker-compose
     become: yes
 
-  - name: Manage WordPress application using Docker Compose (v2 syntax)
-    community.docker.docker_compose_v2:
-      project_name: wordpress
-      docker_cli: /usr/bin/docker
-      definition:
+  - name: Create WordPress compose file
+    ansible.builtin.copy:
+      dest: "/tmp/wordpress-compose.yml"
+      content: |
         version: '3.3'
         services:
           db:
@@ -62,6 +67,14 @@
 
         volumes:
           db_data: {}
+    become: yes
+
+  - name: Manage WordPress application using Docker Compose (v2 syntax)
+    community.docker.docker_compose_v2:
+      project_name: wordpress
+      project_src: /tmp
+      files:
+        - wordpress-compose.yml
       state: "{{ demo_state }}"
     become: yes
     register: wordpress_result 
