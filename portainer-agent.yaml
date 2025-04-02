@@ -35,7 +35,7 @@
     - name: Run second Portainer Edge Agent Container (DO)
       community.docker.docker_container:
         name: portainer_edge_agent_do
-        image: portainer/agent:2.19.3
+        image: portainer/agent:2.27.3
         state: started
         restart_policy: always
         volumes:
