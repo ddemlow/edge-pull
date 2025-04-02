@@ -21,6 +21,12 @@
     ignore_errors: true
     changed_when: false
 
+  - name: Install community.docker collection
+    ansible.builtin.shell: ansible-galaxy collection install community.docker
+    register: collection_install
+    changed_when: collection_install.rc == 0
+    ignore_errors: true
+
   - name: Check Docker Compose version
     ansible.builtin.shell: docker compose version || docker-compose --version
     register: compose_version
