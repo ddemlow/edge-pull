@@ -28,12 +28,6 @@
     when: docker_check.rc != 0
     become: yes
 
-  - name: Install Docker Compose plugin
-    ansible.builtin.shell: |
-      brew install docker-compose
-    become: yes
-    when: docker_check.rc == 0
-
   - name: Manage WordPress application using Docker Compose (v2 syntax)
     community.docker.docker_compose_v2:
       project_name: wordpress
