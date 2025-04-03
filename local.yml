@@ -15,16 +15,6 @@
   gather_facts: True
 
   pre_tasks:
-  - name: Install Docker Compose Plugin
-    ansible.builtin.shell: |
-      DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/lib/docker/cli-plugins}
-      sudo mkdir -p $DOCKER_CONFIG
-      sudo curl -SL "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64" -o $DOCKER_CONFIG/docker-compose
-      sudo chmod +x $DOCKER_CONFIG/docker-compose
-    args:
-      creates: /usr/lib/docker/cli-plugins/docker-compose
-    become: yes
-
   - name: Create WordPress compose file
     ansible.builtin.copy:
       dest: "/tmp/wordpress-compose.yml"
@@ -57,16 +47,6 @@
           db_data: {}
     become: yes
 
-  - name: Get Docker CLI path with specific locations
-    ansible.builtin.command: "{{ item }}"
-    with_items:
-      - which docker
-      - test -f /usr/bin/docker && echo "/usr/bin/docker"
-      - test -f /usr/local/bin/docker && echo "/usr/local/bin/docker"
-    register: docker_cli_results
-    ignore_errors: yes
-    changed_when: false
-
   - name: Set Docker CLI path
     ansible.builtin.set_fact:
       docker_cli: "{{ (docker_cli_results.results | selectattr('stdout', 'defined') | map(attribute='stdout') | first) }}"
@@ -83,13 +63,6 @@
     become: yes
     register: wordpress_result
     ignore_errors: yes
-
-  # - name: manage opensourcepos application from /opensourcepos/docker-compose.yaml file 
-  #   community.docker.docker_compose:
-  #     project_src: opensourcepos
-  #     state: absent
-  #   become: true
-  #   ignore_errors: true
 
   - name: Manage pgAdmin4 container state and version
     community.docker.docker_container:
@@ -113,10 +86,9 @@
   - name: include playbook portainer agent  #include file should have only tasks - not full playbook
     ansible.builtin.include_tasks:
       file: portainer-agent.yaml
-#    register: portainer_result
+    register: portainer_result
 
   post_tasks:
-
   - name: Set flag if any task has changed
     ansible.builtin.set_fact:
       any_change: >
@@ -161,5 +133,5 @@
       vm_name: "{{ ansible_hostname }}"
       description: "Count:{{ docker_container_count.stdout }} @{{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}GMT {{ docker_ps.stdout_lines }}"
     changed_when: false
-    when: any_change | default(false) or ansible_date_time.minute | int < 5
+    when: any_change or ansible_date_time.minute | int < 5
     ignore_errors: true
