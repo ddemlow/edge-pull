@@ -78,11 +78,15 @@
         disks:
           - type: ide_cdrom
             disk_slot: 0
+          - type: nvram
+            disk_slot: -1
+          - type: vtpm
+            disk_slot: -1
         nics:
           - vlan: 0
             type: virtio
         operating_system:  os_other
-        machine_type: "VTPM"
+        machine_type: "vTPM+UEFI"
         
       when:  vm_info_result.records | length == 0   #only create VM if it doesn't already exist - else would delete existing template disk
       register: template
@@ -104,6 +108,12 @@
           - disk_slot: 1
             type: virtio_disk
             size: "{{ '300 GB' | human_to_bytes }}" # 50GB | human to bytes results in 53.7GB VSD in Hypercore
+          - type: nvram
+            disk_slot: -1
+            size: 1000000
+          - type: vtpm
+            disk_slot: -1
+            size: 1000000
         state: present
 
     - name: Set attached vsd device as bootable
@@ -115,13 +125,13 @@
         state: present
       register: bootable
 
-    - name: clean up errant NVRAM disk 
-      scale_computing.hypercore.vm_disk:
-        vm_name: "{{ image_name }}"
-        items:
-          - disk_slot: 0
-            type: nvram
-        state: absent
+    # - name: clean up errant NVRAM disk 
+    #   scale_computing.hypercore.vm_disk:
+    #     vm_name: "{{ image_name }}"
+    #     items:
+    #       - disk_slot: 0
+    #         type: nvram
+    #     state: absent
 
 # template complete! ... I guess here I don't need to create a template and clone it - TODO?
 
@@ -139,17 +149,24 @@
                 - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDihWWhjoPj8KVLtdLDwNJQ71zi9An0iUFjefRWu2Eju ddemlow@scalecomputing.com
                 - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTiBEMhRymL0yqDAGF33DVwzfqp2CcyKJOOq5A862ocnOKRVhKoaU6ZfXnyLanqbylMKut5kuCRfq51nR7eBGpM6V0IUe5wlgvRB1HtXJHDBedclRaPWa8XQikk8AOscbmGufcs10TEFDH45L4tJd3ym+VD8mKp7PIge6yvhxaQaPfGx3MafEPm/ISpDLxbNueTIHBUt3WE7lfPXZ3owHIaEEht3L7hXvEqG801x/snT7Y1NJwfEpfD2EClDwoHHdln+UzJyxsbGZgmCgTVmXvnaz833lb2pEvmzfRZQybuXMtFB4/q8evc0CfIhqIcRaLzdImxgV
             disable_root: false # allow ssh root login
-            packages: [python3-pip, docker.io, docker-compose-plugin, qemu-guest-agent, software-properties-common ]
-            ansible:
-              run_user: "{{ cron_user }}"
-              package_name: ansible-core
-              install_method: pip
-              pull:
-                url: "{{ repo_url }}"
-                playbook_name: local.yml
+            packages: [python3-pip, qemu-guest-agent, software-properties-common ]
+            # ansible:
+            #   run_user: "{{ cron_user }}"
+            #   package_name: ansible-core
+            #   install_method: pip
+            #   pull:
+            #     url: "{{ repo_url }}"
+            #     playbook_name: local.yml
             runcmd:
+              # Add Docker's official GPG key
+              - install -m 0755 -d /etc/apt/keyrings
+              - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              - chmod a+r /etc/apt/keyrings/docker.gpg
+              # Add Docker repository
+              - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
               - add-apt-repository -y ppa:ansible/ansible
               - apt-get update
+              - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
               - apt-get install -y ansible
               - "ansible-galaxy collection install scale_computing.hypercore"
               - "ansible-galaxy collection install community.docker"
@@ -189,7 +206,7 @@
 
  
     - name: Disk desired configuration for "{{ vmname }}"   # seems resizing disk before first boot causes panic on debian11 bulseye unless serial port exists - add SERIAL to tag or description
-      scale_computing.hypercore.vm_disk:  
+      scale_computing.hypercore.vm_disk:
         vm_name: "{{ vmname }}"
         items:
           - disk_slot: 1
@@ -199,7 +216,7 @@
 
     - name: Vm desired configuration and state for "{{ vmname }}"
       scale_computing.hypercore.vm_params:
-        vm_name: "{{vmname}}"
+        vm_name: "{{ vmname }}"
         memory: "{{ '4 GB' | human_to_bytes }}"
         description: user=default - password=password media "{{ image_url }}" - SERIAL
         tags:
@@ -208,7 +225,7 @@
           - "ansible_group__pullrunner" # this will create tag used by hypercore inventory plugin when executing towards VM hosts
           - "ansible_user__debian"
           - "repo__{{ repo_url }}"
-          - SERIAL 
+          - SERIAL
         vcpu: 4
         power_state: start
 
@@ -224,3 +241,36 @@
         power_state: start
 
 # TODO - could extend this to connect directly into runner for "push" updates - could also have runners check/config themselves via pull
+
+    - name: Remove "{{ vmname }}-pullrunner-jammy" VM
+      scale_computing.hypercore.vm:
+        vm_name: "{{ site_name }}-pullrunner-jammy"
+        state: absent
+      register: remove_vm
+
+    - name: Remove "{{ vmname }}-pullrunner-jammy" VM
+      scale_computing.hypercore.vm:
+        vm_name: "{{ site_name }}-pullrunner"
+        state: absent
+      register: remove_vm  
+
+    # - name: Remove "{{ image_name }}" template VM
+    #   scale_computing.hypercore.vm:
+    #     vm_name: "{{ image_name }}"
+    #     state: absent
+    #   when: demo_state == "absent"
+    #   register: remove_template
+
+    # - name: Remove uploaded virtual disk "{{ image_name }}"
+    #   scale_computing.hypercore.virtual_disk:
+    #     name: "{{ image_name }}"
+    #     state: absent
+    #   when: demo_state == "absent"
+    #   register: remove_disk
+
+    # - name: Remove uploading virtual disk "{{ image_name }}"
+    #   scale_computing.hypercore.virtual_disk:
+    #     name: "uploading-{{ image_name }}"
+    #     state: absent
+    #   when: demo_state == "absent"
+    #   register: remove_uploading_disk
