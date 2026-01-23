@@ -35,7 +35,6 @@
     - name: Stop  second Portainer Edge Agent Container (DO)
       community.docker.docker_container:
         name: portainer_edge_agent_do
-        image: portainer/agent:2.27.3
         state: absent
       become: yes
 
